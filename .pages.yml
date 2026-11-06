@@ -46,8 +46,10 @@ content:
         required: true
       - name: role
         label: Role
-        type: string
+        type: select
         required: true
+        options:
+          values: [Faculty, "PhD Student", "MSEd Student"]
       - name: focus
         label: Focus
         type: string
