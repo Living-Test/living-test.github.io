@@ -1,18 +1,9 @@
 [
   {
-    "title": "HTML",
-    "author": "Me",
-    "summary": "",
-    "thumbnail": "/projects/media/Goldfish-ezgif.com-webp-to-jpg-converter.jpg",
-    "student_file": "/projects/media/Firefly Jar.html",
-    "live_link": ""
-  },
-  {
     "title": "Lovable",
     "author": "AIED",
-    "summary": "",
+    "description": "",
     "thumbnail": "",
-    "student_file": "",
     "live_link": "https://wiki.pennai-pedagogy.org/"
   }
 ]

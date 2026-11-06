@@ -1,5 +1,5 @@
 media:
-  input: projects/media   # Where images/uploaded HTML files are saved in GitHub
+  input: projects/media   # Where uploaded images are saved in GitHub
   output: /projects/media # The URL path used on the live website
 
 content:
@@ -24,11 +24,11 @@ content:
         label: Thumbnail Image
         type: image
       - name: live_link
-        label: Live Demo Link (If pasting a Lovable/Vercel URL)
+        label: Live site
         type: string
-      - name: student_file
-        label: Upload Student HTML File (If dragging in a Claude export)
-        type: file
+        required: true
+        pattern: "^https?://.+"
+        hint: The published address of this project, such as a Lovable or Vercel link.
 
   - name: team
     label: Team
@@ -46,8 +46,10 @@ content:
         required: true
       - name: role
         label: Role
-        type: string
+        type: select
         required: true
+        options:
+          values: [Faculty, "PhD Student", "MSEd Student"]
       - name: focus
         label: Focus
         type: string

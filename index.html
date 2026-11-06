@@ -156,12 +156,13 @@
       font-weight: 600;
     }
     .bench-count { margin: 0.2rem 0 0; color: var(--muted); font-family: var(--mono); font-size: 0.82rem; }
+    .empty { margin: 0.4rem 0 0; color: var(--muted); }
     .bench {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
       gap: 0.9rem;
     }
-    #imported-projects, #published-projects { display: contents; }
+    #published-projects { display: contents; }
     .card {
       position: relative;
       background: var(--card);
@@ -429,62 +430,20 @@
           <h2 class="reveal">Projects</h2>
           <p class="bench-count reveal" id="bench-count" aria-live="polite"></p>
         </div>
-        <button type="button" class="primary" id="import-open">Import project</button>
       </div>
 
       <div class="bench" id="project-bench">
         <div id="published-projects"></div>
-        <div id="imported-projects"></div>
       </div>
+      <p class="empty" id="projects-empty" hidden>No projects yet. Add one in Pages CMS with a live site link.</p>
     </main>
   </div>
 
-  <dialog id="import-dialog">
-    <form id="import-form">
-      <h3>Import a project</h3>
-      <p>Add an HTML file exported from Lovable or a similar tool, or paste a link to a project that is already published. It is saved in this browser.</p>
-      <label>
-        Title
-        <input type="text" name="title" required maxlength="120">
-      </label>
-      <fieldset>
-        <legend class="hint">Source</legend>
-        <label><input type="radio" name="source" value="file" checked> HTML file</label>
-        <label><input type="radio" name="source" value="link"> Published link</label>
-      </fieldset>
-      <label id="file-field">
-        HTML file
-        <input type="file" name="file" accept=".html,text/html">
-      </label>
-      <label id="link-field" hidden>
-        Published link
-        <input type="url" name="url" placeholder="https://">
-      </label>
-      <label>
-        Short description
-        <textarea name="summary" rows="3" maxlength="280"></textarea>
-      </label>
-      <p class="error" id="import-error" role="alert"></p>
-      <div class="dialog-actions">
-        <button type="submit" class="primary">Add project</button>
-        <button type="button" class="secondary" id="import-cancel">Cancel</button>
-      </div>
-    </form>
-  </dialog>
-
   <script>
-    const STORAGE_KEY = "living-lab-imports";
     const THEME_KEY = "living-lab-theme";
-    const MAX_FILE_BYTES = 15 * 1024 * 1024;
-    const list = document.querySelector("#imported-projects");
     const publishedList = document.querySelector("#published-projects");
-    let publishedProjects = [];
     const count = document.querySelector("#bench-count");
-    const dialog = document.querySelector("#import-dialog");
-    const form = document.querySelector("#import-form");
-    const error = document.querySelector("#import-error");
-    const fileField = document.querySelector("#file-field");
-    const linkField = document.querySelector("#link-field");
+    const empty = document.querySelector("#projects-empty");
     const motionOK = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     function applyTheme(name) {
@@ -525,61 +484,6 @@
       });
     }
 
-    function loadProjects() {
-      try {
-        return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-      } catch {
-        return [];
-      }
-    }
-
-    function saveProjects(projects) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
-    }
-
-    function openDb() {
-      return new Promise((resolve, reject) => {
-        const request = indexedDB.open("living-lab", 1);
-        request.onupgradeneeded = () => request.result.createObjectStore("files");
-        request.onsuccess = () => resolve(request.result);
-        request.onerror = () => reject(request.error);
-      });
-    }
-
-    async function storeFile(id, html) {
-      const db = await openDb();
-      await new Promise((resolve, reject) => {
-        const tx = db.transaction("files", "readwrite");
-        tx.objectStore("files").put(html, id);
-        tx.oncomplete = resolve;
-        tx.onerror = () => reject(tx.error);
-      });
-      db.close();
-    }
-
-    async function readFile(id) {
-      const db = await openDb();
-      const html = await new Promise((resolve, reject) => {
-        const tx = db.transaction("files", "readonly");
-        const request = tx.objectStore("files").get(id);
-        request.onsuccess = () => resolve(request.result);
-        request.onerror = () => reject(request.error);
-      });
-      db.close();
-      return html;
-    }
-
-    async function deleteFile(id) {
-      const db = await openDb();
-      await new Promise((resolve, reject) => {
-        const tx = db.transaction("files", "readwrite");
-        tx.objectStore("files").delete(id);
-        tx.oncomplete = resolve;
-        tx.onerror = () => reject(tx.error);
-      });
-      db.close();
-    }
-
     function assetUrl(value) {
       if (!value) return "";
       const splitAt = value.search(/[?#]/);
@@ -599,9 +503,12 @@
       }
     }
 
-    function renderPublished() {
+    function renderPublished(projects) {
       publishedList.replaceChildren();
-      for (const project of publishedProjects) {
+      const visible = projects.filter((project) => /^https?:\/\//i.test(project.live_link || ""));
+      count.textContent = visible.length === 1 ? "1 project" : `${visible.length} projects`;
+      empty.hidden = visible.length > 0;
+      for (const project of visible) {
         const liveLink = /^https?:\/\//i.test(project.live_link || "") ? project.live_link : "";
         const card = document.createElement(liveLink ? "a" : "article");
         card.className = "card reveal";
@@ -642,245 +549,16 @@
 
         const summary = document.createElement("p");
         summary.className = "summary";
-        summary.textContent = project.summary || "";
-        if (!project.summary) summary.hidden = true;
+        summary.textContent = project.description || "";
+        if (!project.description) summary.hidden = true;
 
-        const actions = document.createElement("div");
-        actions.className = "card-actions";
-        if (!liveLink && project.student_file) {
-          const launch = document.createElement("a");
-          launch.className = "launch";
-          launch.href = assetUrl(project.student_file);
-          launch.target = "_blank";
-          launch.rel = "noopener noreferrer";
-          launch.textContent = "Launch app";
-          actions.append(launch);
-        }
-
-        card.append(preview, tag, title, summary, actions);
+        card.append(preview, tag, title, summary);
         publishedList.append(card);
       }
     }
 
-    function render(freshId) {
-      list.replaceChildren();
-      const projects = loadProjects();
-      const total = projects.length + publishedProjects.length;
-      count.textContent = total === 1 ? "1 project" : `${total} projects`;
-
-      for (const project of projects) {
-        const card = document.createElement("article");
-        card.className = "card reveal";
-        card.dataset.kind = project.kind === "link" ? "link" : "file";
-        if (project.id === freshId) card.classList.add("just-added");
-
-        const preview = document.createElement("div");
-        preview.className = "preview";
-        const frame = document.createElement("iframe");
-        frame.title = `Preview of ${project.title}`;
-        frame.tabIndex = -1;
-        frame.referrerPolicy = "no-referrer";
-        frame.setAttribute("scrolling", "no");
-        frame.setAttribute(
-          "sandbox",
-          project.kind === "link"
-            ? "allow-scripts allow-forms allow-popups allow-same-origin"
-            : "allow-scripts allow-forms allow-popups"
-        );
-        const note = document.createElement("p");
-        note.className = "preview-note";
-        note.setAttribute("aria-hidden", "true");
-        note.textContent = project.kind === "link"
-          ? "This site can't be shown inside the lab page. Use Launch app."
-          : "Loading preview…";
-        preview.append(note, frame);
-        fitPreview(frame, preview);
-
-        if (project.kind === "link") {
-          frame.addEventListener("load", () => {
-            try {
-              const href = frame.contentWindow.location.href;
-              if (!href || href === "about:blank") {
-                frame.remove();
-                note.removeAttribute("aria-hidden");
-              }
-            } catch {
-              // A painted page covers the note. An empty blocked frame leaves it visible.
-            }
-          });
-          frame.src = project.url;
-        } else {
-          frame.style.background = "white";
-          readFile(project.id).then((html) => {
-            if (!html || !frame.isConnected) {
-              frame.remove();
-              note.textContent = "This file could not be previewed. Use Launch app.";
-              return;
-            }
-            note.remove();
-            frame.srcdoc = html;
-          });
-        }
-
-        const tag = document.createElement("p");
-        tag.className = "tag";
-        tag.textContent = project.kind === "link" ? "Live link" : "HTML file";
-
-        const title = document.createElement("h3");
-        title.textContent = project.title;
-
-        const summary = document.createElement("p");
-        summary.className = "summary";
-        summary.textContent = project.summary;
-
-        const actions = document.createElement("div");
-        actions.className = "card-actions";
-
-        if (project.kind === "link") {
-          const launch = document.createElement("a");
-          launch.className = "launch";
-          launch.href = project.url;
-          launch.target = "_blank";
-          launch.rel = "noopener noreferrer";
-          launch.textContent = "Launch app";
-          actions.append(launch);
-        } else {
-          const launch = document.createElement("button");
-          launch.type = "button";
-          launch.className = "launch";
-          launch.textContent = "Launch app";
-          launch.addEventListener("click", () => launchFile(project.id));
-          actions.append(launch);
-        }
-
-        const remove = document.createElement("button");
-        remove.type = "button";
-        remove.className = "quiet";
-        remove.textContent = "Remove";
-        remove.addEventListener("click", () => removeProject(project.id));
-        actions.append(remove);
-
-        card.append(preview, tag, title, summary, actions);
-        list.append(card);
-      }
-    }
-
-    function fitPreview(frame, box) {
-      const fit = () => {
-        const scale = box.clientWidth / 1280;
-        if (!scale) return;
-        frame.style.height = `${box.clientHeight / scale}px`;
-        frame.style.transform = `scale(${scale})`;
-      };
-      fit();
-      new ResizeObserver(fit).observe(box);
-    }
-
-    async function launchFile(id) {
-      const html = await readFile(id);
-      if (!html) return;
-      const popup = window.open("", "_blank");
-      if (!popup) return;
-      popup.document.open();
-      popup.document.write(html);
-      popup.document.close();
-    }
-
-    async function removeProject(id) {
-      const projects = loadProjects().filter((project) => project.id !== id);
-      saveProjects(projects);
-      await deleteFile(id);
-      render();
-    }
-
-    function selectedSource() {
-      return form.elements.source.value;
-    }
-
-    function syncSourceFields() {
-      const useFile = selectedSource() === "file";
-      fileField.hidden = !useFile;
-      linkField.hidden = useFile;
-      form.elements.file.required = useFile;
-      form.elements.url.required = !useFile;
-    }
-
-    document.querySelector("#import-open").addEventListener("click", () => {
-      error.textContent = "";
-      form.reset();
-      syncSourceFields();
-      dialog.showModal();
-    });
-
-    document.querySelector("#import-cancel").addEventListener("click", () => dialog.close());
-    form.elements.source.forEach((input) => input.addEventListener("change", syncSourceFields));
-
-    let submitting = false;
-
-    form.addEventListener("submit", async (event) => {
-      event.preventDefault();
-      if (submitting) return;
-      submitting = true;
-      error.textContent = "";
-      const submitButton = form.querySelector('button[type="submit"]');
-      submitButton.disabled = true;
-      const title = form.elements.title.value.trim();
-      const summary = form.elements.summary.value.trim();
-      const project = {
-        id: crypto.randomUUID(),
-        title,
-        summary: summary || (selectedSource() === "file" ? "Imported HTML project." : "Published project."),
-        kind: selectedSource()
-      };
-
-      try {
-        if (project.kind === "file") {
-          const file = form.elements.file.files[0];
-          if (!file) {
-            error.textContent = "Choose an HTML file.";
-            return;
-          }
-          const isHtml = file.type === "text/html" || file.name.toLowerCase().endsWith(".html");
-          if (!isHtml) {
-            error.textContent = "Use an .html file, or paste a published link instead.";
-            return;
-          }
-          if (file.size > MAX_FILE_BYTES) {
-            error.textContent = "That file is over 15 MB. Paste a link to the published project instead.";
-            return;
-          }
-          await storeFile(project.id, await file.text());
-        } else {
-          let url;
-          try {
-            url = new URL(form.elements.url.value.trim());
-          } catch {
-            error.textContent = "Enter a full link, including https://.";
-            return;
-          }
-          if (url.protocol !== "http:" && url.protocol !== "https:") {
-            error.textContent = "Use an http or https link.";
-            return;
-          }
-          project.url = url.href;
-        }
-
-        saveProjects([...loadProjects(), project]);
-        dialog.close();
-        render(project.id);
-      } catch (cause) {
-        error.textContent = "That project could not be added.";
-        console.error(cause);
-      } finally {
-        submitting = false;
-        submitButton.disabled = false;
-      }
-    });
-
     loadPublished().then((projects) => {
-      publishedProjects = projects;
-      renderPublished();
-      render();
+      renderPublished(projects);
       playEntrance();
     });
   </script>

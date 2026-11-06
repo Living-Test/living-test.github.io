@@ -32,14 +32,15 @@ if (fs.existsSync(projectsDir)) {
   for (const name of fs.readdirSync(projectsDir)) {
     if (!name.endsWith(".json")) continue;
     const project = JSON.parse(fs.readFileSync(path.join(projectsDir, name), "utf8"));
-    if (!project.title) continue;
+    const description = project.description || project.summary || "";
+    const liveLink = project.live_link ? String(project.live_link).trim() : "";
+    if (!project.title || !/^https?:\/\//i.test(liveLink)) continue;
     projects.push({
       title: String(project.title),
       author: project.author ? String(project.author) : "",
-      summary: project.summary ? String(project.summary) : "",
+      description: String(description),
       thumbnail: project.thumbnail ? String(project.thumbnail) : "",
-      student_file: project.student_file ? String(project.student_file) : "",
-      live_link: project.live_link ? String(project.live_link).trim() : ""
+      live_link: liveLink
     });
   }
 }
