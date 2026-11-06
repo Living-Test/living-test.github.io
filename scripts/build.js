@@ -20,6 +20,9 @@ for (const entry of fs.readdirSync(dist)) {
   fs.rmSync(path.join(dist, entry), { recursive: true, force: true });
 }
 fs.copyFileSync(path.join(root, "index.html"), path.join(dist, "index.html"));
+fs.mkdirSync(path.join(dist, "team"), { recursive: true });
+fs.copyFileSync(path.join(root, "team", "index.html"), path.join(dist, "team", "index.html"));
+fs.copyFileSync(path.join(root, "team.json"), path.join(dist, "team.json"));
 copyDir(path.join(root, "admin"), path.join(dist, "admin"));
 copyDir(path.join(root, "projects"), path.join(dist, "projects"));
 
@@ -45,4 +48,4 @@ const manifest = JSON.stringify(projects, null, 2);
 fs.writeFileSync(path.join(dist, "projects.json"), manifest);
 fs.writeFileSync(path.join(root, "projects.json"), manifest);
 console.log(`Wrote ${projects.length} project(s) to projects.json`);
-console.log("Copied index.html, admin/, and projects/ to dist/");
+console.log("Copied index.html, team/, admin/, and projects/ to dist/");

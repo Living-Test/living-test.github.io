@@ -29,3 +29,32 @@ content:
       - name: student_file
         label: Upload Student HTML File (If dragging in a Claude export)
         type: file
+
+  - name: team
+    label: Team
+    type: file
+    path: team.json
+    format: json
+    list: true
+    view:
+      primary: name
+      fields: [name, role]
+    fields:
+      - name: name
+        label: Name
+        type: string
+        required: true
+      - name: role
+        label: Role
+        type: string
+        required: true
+      - name: focus
+        label: Focus
+        type: string
+      - name: photo
+        label: Photo
+        type: image
+      - name: link
+        label: Link
+        type: string
+        hint: Optional site or email. This does not create a profile page.

@@ -115,6 +115,13 @@
       border-color: var(--accent);
     }
     .wrap { max-width: 1080px; margin: 0 auto; padding: 3rem 1.25rem 4.5rem; }
+    .site-nav { display: flex; gap: 1.1rem; margin: 0 0 1.5rem; }
+    .site-nav a {
+      color: var(--muted);
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .site-nav a[aria-current="page"] { color: var(--ink); }
     header { margin-bottom: 2.5rem; max-width: 40rem; }
     .eyebrow {
       margin: 0 0 0.7rem;
@@ -406,6 +413,10 @@
   </div>
 
   <div class="wrap">
+    <nav class="site-nav" aria-label="Site">
+      <a href="/" aria-current="page">Projects</a>
+      <a href="/team/">Team</a>
+    </nav>
     <header>
       <p class="eyebrow reveal">Research lab</p>
       <h1 class="reveal">Living Lab</h1>
