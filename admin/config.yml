@@ -1,0 +1,40 @@
+# Editors sign in with GitHub and Decap commits to this repo.
+# The published site still needs an OAuth proxy or Decap Turbo before login works.
+backend:
+  name: github
+  repo: Living-Test/living-test.github.io
+  branch: main
+
+local_backend: true
+
+media_folder: content/uploads
+public_folder: /uploads
+
+collections:
+  - name: projects
+    label: Projects
+    label_singular: Project
+    folder: content/projects
+    create: true
+    delete: true
+    slug: "{{slug}}"
+    extension: json
+    format: json
+    identifier_field: title
+    summary: "{{title}}"
+    fields:
+      - label: Title
+        name: title
+        widget: string
+      - label: Short description
+        name: summary
+        widget: text
+      - label: Published site
+        name: url
+        widget: string
+        hint: GitHub Pages address of this project's own repository, such as https://living-test.github.io/project-name/
+      - label: Repository
+        name: repo
+        widget: string
+        required: false
+        hint: Optional link to the project's GitHub repository.
