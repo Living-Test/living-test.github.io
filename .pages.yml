@@ -1,0 +1,32 @@
+media:
+  folder: projects
+  public: /projects
+
+content:
+  - name: projects
+    label: Projects
+    type: collection
+    folder: projects
+    extension: html
+    format: frontmatter
+    fields:
+      - name: title
+        label: Project Title
+        type: string
+        required: true
+      - name: author
+        label: Author
+        type: string
+        required: true
+      - name: description
+        label: Description
+        type: text
+        required: false
+      - name: thumbnail
+        label: Thumbnail Image
+        type: image
+        required: false
+      - name: live_link
+        label: Live Demo Link (If not uploading HTML)
+        type: string
+        required: false
