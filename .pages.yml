@@ -7,8 +7,8 @@ content:
     label: Projects
     type: collection
     folder: projects
-    extension: html
-    format: frontmatter
+    extension: json
+    format: json
     fields:
       - name: title
         label: Project Title
@@ -27,6 +27,10 @@ content:
         type: image
         required: false
       - name: live_link
-        label: Live Demo Link (If not uploading HTML)
+        label: Live Demo Link (If pasting a Lovable/Vercel URL)
         type: string
+        required: false
+      - name: student_file
+        label: Upload Student HTML File (If dragging in a Claude export)
+        type: file
         required: false
