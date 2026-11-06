@@ -1,0 +1,7 @@
+{
+  "name": "living-lab",
+  "private": true,
+  "scripts": {
+    "build": "node scripts/build.js"
+  }
+}
