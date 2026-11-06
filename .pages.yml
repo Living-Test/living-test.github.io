@@ -1,0 +1,31 @@
+media:
+  input: projects/media   # Where images/uploaded HTML files are saved in GitHub
+  output: /projects/media # The URL path used on the live website
+
+content:
+  - name: projects
+    label: Projects
+    type: collection
+    path: projects        # The GitHub folder where the project data is saved
+    filename: "{primary}.json"
+    fields:
+      - name: title
+        label: Project Title
+        type: string
+        required: true
+      - name: author
+        label: Author
+        type: string
+        required: true
+      - name: description
+        label: Description
+        type: text
+      - name: thumbnail
+        label: Thumbnail Image
+        type: image
+      - name: live_link
+        label: Live Demo Link (If pasting a Lovable/Vercel URL)
+        type: string
+      - name: student_file
+        label: Upload Student HTML File (If dragging in a Claude export)
+        type: file
