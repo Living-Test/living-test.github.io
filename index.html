@@ -208,9 +208,11 @@
       transition: transform 0.35s ease;
     }
     [data-theme="atrium"] .card:hover::before { transform: scaleY(1); }
-    [data-theme="atrium"] .card h3 { grid-column: 2; grid-row: 1; margin-bottom: 0.2rem; }
-    [data-theme="atrium"] .card .summary { grid-column: 2; grid-row: 2; }
-    [data-theme="atrium"] .card-actions { grid-column: 3; grid-row: 1 / span 2; }
+    [data-theme="atrium"] .preview { grid-column: 1 / -1; grid-row: 1; }
+    [data-theme="atrium"] .tag { grid-column: 1; grid-row: 2; }
+    [data-theme="atrium"] .card h3 { grid-column: 2; grid-row: 2; margin-bottom: 0.2rem; }
+    [data-theme="atrium"] .card .summary { grid-column: 2; grid-row: 3; }
+    [data-theme="atrium"] .card-actions { grid-column: 3; grid-row: 2 / span 2; }
     [data-theme="atrium"] .reveal-run {
       animation: unveil 0.8s cubic-bezier(0.16, 0.84, 0.28, 1) both;
       animation-delay: var(--reveal-delay, 0ms);
@@ -226,6 +228,37 @@
         transform: none;
         clip-path: inset(0 0 -0.2em 0);
       }
+    }
+    .preview {
+      position: relative;
+      height: 168px;
+      margin-bottom: 0.9rem;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: color-mix(in srgb, var(--line) 45%, var(--bg));
+    }
+    .preview iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 1280px;
+      border: 0;
+      transform-origin: top left;
+      pointer-events: none;
+      z-index: 1;
+      background: transparent;
+    }
+    .preview-note {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      margin: 0;
+      padding: 1rem;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.92rem;
     }
     .tag {
       display: inline-block;
@@ -317,6 +350,8 @@
     @media (max-width: 720px) {
       .wrap { padding-top: 2rem; }
       [data-theme="atrium"] .card { grid-template-columns: 1fr; }
+      [data-theme="atrium"] .preview,
+      [data-theme="atrium"] .tag,
       [data-theme="atrium"] .card h3,
       [data-theme="atrium"] .card .summary,
       [data-theme="atrium"] .card-actions { grid-column: 1; grid-row: auto; }
@@ -519,6 +554,54 @@
         card.dataset.kind = project.kind === "link" ? "link" : "file";
         if (project.id === freshId) card.classList.add("just-added");
 
+        const preview = document.createElement("div");
+        preview.className = "preview";
+        const frame = document.createElement("iframe");
+        frame.title = `Preview of ${project.title}`;
+        frame.tabIndex = -1;
+        frame.referrerPolicy = "no-referrer";
+        frame.setAttribute("scrolling", "no");
+        frame.setAttribute(
+          "sandbox",
+          project.kind === "link"
+            ? "allow-scripts allow-forms allow-popups allow-same-origin"
+            : "allow-scripts allow-forms allow-popups"
+        );
+        const note = document.createElement("p");
+        note.className = "preview-note";
+        note.setAttribute("aria-hidden", "true");
+        note.textContent = project.kind === "link"
+          ? "This site can't be shown inside the lab page. Use Launch app."
+          : "Loading preview…";
+        preview.append(note, frame);
+        fitPreview(frame, preview);
+
+        if (project.kind === "link") {
+          frame.addEventListener("load", () => {
+            try {
+              const href = frame.contentWindow.location.href;
+              if (!href || href === "about:blank") {
+                frame.remove();
+                note.removeAttribute("aria-hidden");
+              }
+            } catch {
+              // A painted page covers the note. An empty blocked frame leaves it visible.
+            }
+          });
+          frame.src = project.url;
+        } else {
+          frame.style.background = "white";
+          readFile(project.id).then((html) => {
+            if (!html || !frame.isConnected) {
+              frame.remove();
+              note.textContent = "This file could not be previewed. Use Launch app.";
+              return;
+            }
+            note.remove();
+            frame.srcdoc = html;
+          });
+        }
+
         const tag = document.createElement("p");
         tag.className = "tag";
         tag.textContent = project.kind === "link" ? "Live link" : "HTML file";
@@ -557,9 +640,20 @@
         remove.addEventListener("click", () => removeProject(project.id));
         actions.append(remove);
 
-        card.append(tag, title, summary, actions);
+        card.append(preview, tag, title, summary, actions);
         list.append(card);
       }
+    }
+
+    function fitPreview(frame, box) {
+      const fit = () => {
+        const scale = box.clientWidth / 1280;
+        if (!scale) return;
+        frame.style.height = `${box.clientHeight / scale}px`;
+        frame.style.transform = `scale(${scale})`;
+      };
+      fit();
+      new ResizeObserver(fit).observe(box);
     }
 
     async function launchFile(id) {
