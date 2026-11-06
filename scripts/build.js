@@ -35,7 +35,8 @@ if (fs.existsSync(projectsDir)) {
       author: project.author ? String(project.author) : "",
       summary: project.summary ? String(project.summary) : "",
       thumbnail: project.thumbnail ? String(project.thumbnail) : "",
-      student_file: project.student_file ? String(project.student_file) : ""
+      student_file: project.student_file ? String(project.student_file) : "",
+      live_link: project.live_link ? String(project.live_link).trim() : ""
     });
   }
 }
