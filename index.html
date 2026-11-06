@@ -154,7 +154,7 @@
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
       gap: 0.9rem;
     }
-    #imported-projects { display: contents; }
+    #imported-projects, #published-projects { display: contents; }
     .card {
       position: relative;
       background: var(--card);
@@ -237,6 +237,12 @@
       border: 1px solid var(--line);
       border-radius: 8px;
       background: color-mix(in srgb, var(--line) 45%, var(--bg));
+    }
+    .preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
     }
     .preview iframe {
       position: absolute;
@@ -390,14 +396,7 @@
       </div>
 
       <div class="bench" id="project-bench">
-        <article class="card reveal" data-kind="resident">
-          <p class="tag">Resident</p>
-          <h3>Project 01: Proof of Concept</h3>
-          <p class="summary">Our GitHub Pages hosting is officially live. Future graduate student web apps will be linked right here.</p>
-          <div class="card-actions">
-            <a class="launch" href="#">Launch app</a>
-          </div>
-        </article>
+        <div id="published-projects"></div>
         <div id="imported-projects"></div>
       </div>
     </main>
@@ -441,6 +440,8 @@
     const THEME_KEY = "living-lab-theme";
     const MAX_FILE_BYTES = 15 * 1024 * 1024;
     const list = document.querySelector("#imported-projects");
+    const publishedList = document.querySelector("#published-projects");
+    let publishedProjects = [];
     const count = document.querySelector("#bench-count");
     const dialog = document.querySelector("#import-dialog");
     const form = document.querySelector("#import-form");
@@ -542,10 +543,74 @@
       db.close();
     }
 
+    function assetUrl(value) {
+      if (!value) return "";
+      const splitAt = value.search(/[?#]/);
+      const filePath = splitAt === -1 ? value : value.slice(0, splitAt);
+      const suffix = splitAt === -1 ? "" : value.slice(splitAt);
+      return filePath.split("/").map((part, index) => (index === 0 ? part : encodeURIComponent(part))).join("/") + suffix;
+    }
+
+    async function loadPublished() {
+      try {
+        const response = await fetch("projects.json", { cache: "no-store" });
+        if (!response.ok) return [];
+        const data = await response.json();
+        return Array.isArray(data) ? data : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function renderPublished() {
+      publishedList.replaceChildren();
+      for (const project of publishedProjects) {
+        const card = document.createElement("article");
+        card.className = "card reveal";
+        card.dataset.kind = "published";
+
+        const preview = document.createElement("div");
+        preview.className = "preview";
+        if (project.thumbnail) {
+          const image = document.createElement("img");
+          image.src = assetUrl(project.thumbnail);
+          image.alt = "";
+          preview.append(image);
+        }
+
+        const tag = document.createElement("p");
+        tag.className = "tag";
+        tag.textContent = project.author || "Project";
+
+        const title = document.createElement("h3");
+        title.textContent = project.title;
+
+        const summary = document.createElement("p");
+        summary.className = "summary";
+        summary.textContent = project.summary || "";
+        if (!project.summary) summary.hidden = true;
+
+        const actions = document.createElement("div");
+        actions.className = "card-actions";
+        if (project.student_file) {
+          const launch = document.createElement("a");
+          launch.className = "launch";
+          launch.href = assetUrl(project.student_file);
+          launch.target = "_blank";
+          launch.rel = "noopener noreferrer";
+          launch.textContent = "Launch app";
+          actions.append(launch);
+        }
+
+        card.append(preview, tag, title, summary, actions);
+        publishedList.append(card);
+      }
+    }
+
     function render(freshId) {
       list.replaceChildren();
       const projects = loadProjects();
-      const total = projects.length + 1;
+      const total = projects.length + publishedProjects.length;
       count.textContent = total === 1 ? "1 project" : `${total} projects`;
 
       for (const project of projects) {
@@ -757,8 +822,12 @@
       }
     });
 
-    render();
-    playEntrance();
+    loadPublished().then((projects) => {
+      publishedProjects = projects;
+      renderPublished();
+      render();
+      playEntrance();
+    });
   </script>
 </body>
 </html>

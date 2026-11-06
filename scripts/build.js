@@ -21,4 +21,27 @@ for (const entry of fs.readdirSync(dist)) {
 }
 fs.copyFileSync(path.join(root, "index.html"), path.join(dist, "index.html"));
 copyDir(path.join(root, "admin"), path.join(dist, "admin"));
-console.log("Copied index.html and admin/ to dist/");
+copyDir(path.join(root, "projects"), path.join(dist, "projects"));
+
+const projectsDir = path.join(root, "projects");
+const projects = [];
+if (fs.existsSync(projectsDir)) {
+  for (const name of fs.readdirSync(projectsDir)) {
+    if (!name.endsWith(".json")) continue;
+    const project = JSON.parse(fs.readFileSync(path.join(projectsDir, name), "utf8"));
+    if (!project.title) continue;
+    projects.push({
+      title: String(project.title),
+      author: project.author ? String(project.author) : "",
+      summary: project.summary ? String(project.summary) : "",
+      thumbnail: project.thumbnail ? String(project.thumbnail) : "",
+      student_file: project.student_file ? String(project.student_file) : ""
+    });
+  }
+}
+projects.sort((a, b) => a.title.localeCompare(b.title));
+const manifest = JSON.stringify(projects, null, 2);
+fs.writeFileSync(path.join(dist, "projects.json"), manifest);
+fs.writeFileSync(path.join(root, "projects.json"), manifest);
+console.log(`Wrote ${projects.length} project(s) to projects.json`);
+console.log("Copied index.html, admin/, and projects/ to dist/");
