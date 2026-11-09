@@ -28,6 +28,45 @@ copyDir(path.join(root, "assets"), path.join(dist, "assets"));
 copyDir(path.join(root, "projects"), path.join(dist, "projects"));
 copyDir(path.join(root, "events"), path.join(dist, "events"));
 
+function fieldValue(value) {
+  if (!value) return "";
+  if (typeof value === "string") return value.trim();
+  if (typeof value === "object") return String(value.src || value.path || value.url || "").trim();
+  return "";
+}
+
+function isHttp(value) {
+  return /^https?:\/\//i.test(value);
+}
+
+function localHtmlPath(value) {
+  if (!value || isHttp(value)) return "";
+  const queryAt = value.search(/[?#]/);
+  const filePath = (queryAt === -1 ? value : value.slice(0, queryAt)).replace(/\\/g, "/");
+  const suffix = queryAt === -1 ? "" : value.slice(queryAt);
+  const withSlash = filePath.startsWith("projects/media/") ? `/${filePath}` : filePath;
+  if (!withSlash.startsWith("/projects/media/") || withSlash.includes("..") || !/\.html?$/i.test(withSlash)) return "";
+  return withSlash + suffix;
+}
+
+function projectType(value) {
+  const type = String(value || "").toLowerCase();
+  if (type === "html" || type === "html file") return "html";
+  if (type === "app" || type === "deployed app") return "app";
+  return "";
+}
+
+function projectLink(project) {
+  const type = projectType(project.project_type);
+  const appLink = fieldValue(project.live_link);
+  const htmlValue = fieldValue(project.html_file || project.student_file);
+  const htmlLink = localHtmlPath(htmlValue) || (isHttp(htmlValue) && /\.html?($|[?#])/i.test(htmlValue) ? htmlValue : "");
+  if (type === "html") return htmlLink;
+  if (type === "app") return isHttp(appLink) ? appLink : "";
+  if (isHttp(appLink)) return appLink;
+  return htmlLink;
+}
+
 const projectsDir = path.join(root, "projects");
 const projects = [];
 if (fs.existsSync(projectsDir)) {
@@ -35,13 +74,14 @@ if (fs.existsSync(projectsDir)) {
     if (!name.endsWith(".json")) continue;
     const project = JSON.parse(fs.readFileSync(path.join(projectsDir, name), "utf8"));
     const description = project.description || project.summary || "";
-    const liveLink = project.live_link ? String(project.live_link).trim() : "";
-    if (!project.title || !/^https?:\/\//i.test(liveLink)) continue;
+    const liveLink = projectLink(project);
+    if (!project.title || !liveLink) continue;
     projects.push({
       title: String(project.title),
       author: project.author ? String(project.author) : "",
       description: String(description),
       thumbnail: project.thumbnail ? String(project.thumbnail) : "",
+      project_type: projectType(project.project_type) || (isHttp(liveLink) ? "app" : "html"),
       live_link: liveLink
     });
   }

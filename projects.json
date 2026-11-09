@@ -1,9 +1,34 @@
 [
   {
+    "title": "Base44",
+    "author": "a",
+    "description": "https://penn-path-pick.base44.app",
+    "thumbnail": "",
+    "project_type": "app",
+    "live_link": "https://penn-path-pick.base44.app"
+  },
+  {
+    "title": "Claude",
+    "author": "public",
+    "description": "Get ready to have your mind bent with this 3D physics simulation. It’s like someone gave AI the keys to a virtual sandbox and said, “Go wild!”",
+    "thumbnail": "",
+    "project_type": "app",
+    "live_link": "https://claude.ai/public/artifacts/5dcd7214-289c-499f-9cf3-4ea6bf34eadb"
+  },
+  {
+    "title": "Claude2",
+    "author": "madewithclaude",
+    "description": "Ever fancied yourself as a rocket scientist? Well, now’s your chance! This simulator lets you try your hand at landing a SpaceX rocket.",
+    "thumbnail": "",
+    "project_type": "app",
+    "live_link": "https://claude.ai/public/artifacts/590d0d2a-da07-4a08-9c83-2d3d11b4f63f"
+  },
+  {
     "title": "Lovable",
     "author": "AIED",
     "description": "",
     "thumbnail": "",
+    "project_type": "app",
     "live_link": "https://wiki.pennai-pedagogy.org/"
   }
 ]

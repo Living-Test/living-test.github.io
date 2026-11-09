@@ -35,7 +35,7 @@
     <p class="page-lead">Graduate student projects and prototypes.</p>
     <p class="count" id="project-count" aria-live="polite"></p>
     <div class="cards" id="projects"></div>
-    <p class="empty" id="projects-empty" hidden>No projects yet. Add one in Pages CMS with a live site link.</p>
+    <p class="empty" id="projects-empty" hidden>No projects yet. Add one in Pages CMS with a deployed app address or an HTML file.</p>
   </main>
 
   <script>
@@ -60,16 +60,22 @@
       return icon;
     }
 
+    function canOpen(href) {
+      if (/^https?:\/\//i.test(href)) return true;
+      const pathOnly = href.split(/[?#]/)[0];
+      return pathOnly.startsWith("/projects/media/") && !pathOnly.includes("..") && /\.html?$/i.test(pathOnly);
+    }
+
     function render(projects) {
       list.replaceChildren();
-      const visible = projects.filter((project) => project && project.title && /^https?:\/\//i.test(project.live_link || ""));
+      const visible = projects.filter((project) => project && project.title && canOpen(project.live_link || ""));
       count.textContent = visible.length === 1 ? "1 project" : `${visible.length} projects`;
       empty.hidden = visible.length > 0;
 
       for (const project of visible) {
         const card = document.createElement("a");
         card.className = "card";
-        card.href = project.live_link;
+        card.href = assetUrl(project.live_link);
         card.target = "_blank";
         card.rel = "noopener noreferrer";
 
