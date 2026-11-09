@@ -30,15 +30,8 @@ jobs:
           node-version: 22
           cache: 'npm'
 
-<<<<<<< HEAD
       - name: Build site
         run: node scripts/build.js
-=======
-      - name: Install dependencies and build
-        run: |
-          npm ci
-          npm run build
->>>>>>> 841113e9cddfe03736e486a440f5b2de780e6f17
 
       - name: Upload build folder
         uses: actions/upload-pages-artifact@v3
