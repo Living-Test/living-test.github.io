@@ -1,4 +1,4 @@
-name: Deploy TSX App to Pages
+name: Publish static site to GitHub Pages
 
 on:
   push:
@@ -29,10 +29,8 @@ jobs:
         with:
           node-version: 20
 
-      - name: Install dependencies and build
-        run: |
-          npm install
-          npm run build
+      - name: Build site
+        run: node scripts/build.js
 
       - name: Upload build folder
         uses: actions/upload-pages-artifact@v3

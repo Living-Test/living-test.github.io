@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Events · Living Lab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/site.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a class="brand" href="/">
+        <span class="brand-name">Living Lab</span>
+        <span class="brand-sub">Human Agency and AI, Penn GSE</span>
+      </a>
+      <nav class="site-nav" aria-label="Site">
+        <a href="/">Home</a>
+        <a href="/projects/">Projects</a>
+        <a href="/team/">Team</a>
+        <a href="/events/" aria-current="page">Events</a>
+        <span class="nav-later">Publications<span class="visually-hidden">, coming later</span></span>
+        <span class="nav-later">AI Tinkery<span class="visually-hidden">, coming later</span></span>
+        <span class="nav-later">Podcast<span class="visually-hidden">, coming later</span></span>
+        <span class="nav-later">Newsletter<span class="visually-hidden">, coming later</span></span>
+        <span class="nav-later">Academics<span class="visually-hidden">, coming later</span></span>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page">
+    <h1 class="page-title">Events</h1>
+    <p class="page-lead">Talks, workshops, and lab gatherings. Items marked Sample are placeholders.</p>
+    <p class="count" id="event-count" aria-live="polite"></p>
+    <div id="event-lists"></div>
+    <p class="empty" id="events-empty" hidden>No events yet.</p>
+  </main>
+
+  <script>
+    const lists = document.querySelector("#event-lists");
+    const count = document.querySelector("#event-count");
+    const empty = document.querySelector("#events-empty");
+
+    function dateKey(value) {
+      const text = String(value || "").slice(0, 10);
+      return /^\d{4}-\d{2}-\d{2}$/.test(text) ? text : "";
+    }
+
+    function formatDate(key) {
+      const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      const [year, month, day] = key.split("-").map(Number);
+      return `${months[month - 1]} ${day}, ${year}`;
+    }
+
+    function todayKey() {
+      const now = new Date();
+      const month = String(now.getMonth() + 1).padStart(2, "0");
+      const day = String(now.getDate()).padStart(2, "0");
+      return `${now.getFullYear()}-${month}-${day}`;
+    }
+
+    function cardFor(event) {
+      const card = document.createElement("article");
+      card.className = "event-card";
+
+      const kicker = document.createElement("p");
+      kicker.className = "kicker";
+      kicker.textContent = event.key ? formatDate(event.key) : "Date to be announced";
+      if (event.sample) {
+        const sample = document.createElement("span");
+        sample.className = "sample";
+        sample.textContent = "Sample";
+        kicker.append(sample);
+      }
+
+      const title = document.createElement("h2");
+      title.textContent = event.title;
+      card.append(kicker, title);
+
+      if (event.location) {
+        const where = document.createElement("p");
+        where.className = "where";
+        where.textContent = event.location;
+        card.append(where);
+      }
+      if (event.summary) {
+        const summary = document.createElement("p");
+        summary.className = "card-text";
+        summary.textContent = event.summary;
+        card.append(summary);
+      }
+      return card;
+    }
+
+    function addGroup(label, events) {
+      if (!events.length) return;
+      if (label) {
+        const heading = document.createElement("h2");
+        heading.className = "group-title";
+        heading.textContent = label;
+        lists.append(heading);
+      }
+      const group = document.createElement("div");
+      group.className = "events";
+      for (const event of events) group.append(cardFor(event));
+      lists.append(group);
+    }
+
+    function render(records) {
+      lists.replaceChildren();
+      const events = records
+        .filter((event) => event && event.title)
+        .map((event) => ({ ...event, key: dateKey(event.date) }));
+      const today = todayKey();
+      const upcoming = events.filter((event) => event.key >= today).sort((a, b) => a.key.localeCompare(b.key));
+      const past = events.filter((event) => event.key && event.key < today).sort((a, b) => b.key.localeCompare(a.key));
+      const undated = events.filter((event) => !event.key);
+
+      count.textContent = events.length === 1 ? "1 event" : `${events.length} events`;
+      empty.hidden = events.length > 0;
+      const split = past.length > 0 && (upcoming.length > 0 || undated.length > 0);
+      addGroup(split ? "Upcoming" : "", upcoming.concat(undated));
+      addGroup(split ? "Past" : "", past);
+    }
+
+    fetch("/events.json", { cache: "no-store" })
+      .then((response) => (response.ok ? response.json() : []))
+      .then((data) => render(Array.isArray(data) ? data : []))
+      .catch(() => render([]));
+  </script>
+</body>
+</html>

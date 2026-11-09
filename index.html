@@ -1,566 +1,138 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="atlas">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Living Lab</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Manrope:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,450;6..72,600&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
-  <script>
-    (function () {
-      var theme = localStorage.getItem("living-lab-theme");
-      if (theme === "archive") theme = "atrium";
-      if (theme !== "atrium" && theme !== "field") theme = "atlas";
-      document.documentElement.dataset.theme = theme;
-    })();
-  </script>
-  <style>
-    :root {
-      --bg: #0c1218;
-      --ink: #e7eef6;
-      --muted: #93a4b8;
-      --card: #141c26;
-      --line: #243140;
-      --accent: #7eb6ff;
-      --accent-ink: #071018;
-      --font: "IBM Plex Sans", system-ui, sans-serif;
-      --display: "IBM Plex Sans", system-ui, sans-serif;
-      --mono: "IBM Plex Mono", ui-monospace, monospace;
-      --radius: 2px;
-      --shadow: none;
-      color-scheme: dark;
-    }
-    [data-theme="atrium"] {
-      --bg: #f3f6f4;
-      --ink: #14211c;
-      --muted: #4e645c;
-      --card: #ffffff;
-      --line: #d7e3dd;
-      --accent: #0c7d62;
-      --accent-ink: #ffffff;
-      --font: "Source Sans 3", system-ui, sans-serif;
-      --display: Newsreader, Georgia, serif;
-      --mono: "IBM Plex Mono", ui-monospace, monospace;
-      --radius: 16px;
-      --shadow: 0 12px 32px rgba(20, 33, 28, 0.06);
-      color-scheme: light;
-    }
-    [data-theme="field"] {
-      --bg: #f4f7fb;
-      --ink: #102033;
-      --muted: #52657c;
-      --card: #ffffff;
-      --line: #d5e0ec;
-      --accent: #0b5cab;
-      --accent-ink: #ffffff;
-      --font: Manrope, system-ui, sans-serif;
-      --display: Manrope, system-ui, sans-serif;
-      --mono: "IBM Plex Mono", ui-monospace, monospace;
-      --radius: 12px;
-      --shadow: 0 1px 0 rgba(16, 32, 51, 0.04);
-      color-scheme: light;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: var(--font);
-      color: var(--ink);
-      background: var(--bg);
-      line-height: 1.5;
-    }
-    [data-theme="atlas"] body {
-      background:
-        radial-gradient(520px circle at var(--mx, 70%) var(--my, 0%), rgba(126, 182, 255, 0.16), transparent 42%),
-        linear-gradient(180deg, #101820 0%, var(--bg) 28rem);
-    }
-    .preview-bar {
-      position: sticky;
-      top: 0;
-      z-index: 20;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 1rem;
-      flex-wrap: wrap;
-      padding: 0.7rem 1.25rem;
-      background: color-mix(in srgb, var(--bg) 88%, transparent);
-      border-bottom: 1px solid var(--line);
-      backdrop-filter: blur(10px);
-    }
-    .preview-label {
-      margin: 0;
-      font-family: var(--mono);
-      font-size: 0.75rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--muted);
-    }
-    .theme-switch { display: flex; gap: 0.35rem; }
-    .theme-switch button {
-      font: inherit;
-      font-size: 0.92rem;
-      font-weight: 600;
-      color: var(--ink);
-      background: transparent;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      padding: 0.35rem 0.8rem;
-      cursor: pointer;
-    }
-    .theme-switch button[aria-checked="true"] {
-      background: var(--accent);
-      color: var(--accent-ink);
-      border-color: var(--accent);
-    }
-    .wrap { max-width: 1080px; margin: 0 auto; padding: 3rem 1.25rem 4.5rem; }
-    .site-nav { display: flex; gap: 1.1rem; margin: 0 0 1.5rem; }
-    .site-nav a {
-      color: var(--muted);
-      font-weight: 600;
-      text-decoration: none;
-    }
-    .site-nav a[aria-current="page"] { color: var(--ink); }
-    header { margin-bottom: 2.5rem; max-width: 40rem; }
-    .eyebrow {
-      margin: 0 0 0.7rem;
-      font-family: var(--mono);
-      font-size: 0.75rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--accent);
-    }
-    h1 {
-      margin: 0;
-      font-family: var(--display);
-      font-weight: 560;
-      font-size: clamp(3rem, 7vw, 4.6rem);
-      letter-spacing: -0.045em;
-      line-height: 0.95;
-    }
-    [data-theme="atrium"] h1 { font-weight: 500; letter-spacing: -0.03em; }
-    .subtitle { margin: 0.9rem 0 0; font-size: 1.15rem; color: var(--muted); }
-    .section-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      gap: 1rem;
-      flex-wrap: wrap;
-      margin-bottom: 1rem;
-    }
-    h2 {
-      margin: 0;
-      font-family: var(--display);
-      font-size: 1.5rem;
-      font-weight: 600;
-    }
-    .bench-count { margin: 0.2rem 0 0; color: var(--muted); font-family: var(--mono); font-size: 0.82rem; }
-    .empty { margin: 0.4rem 0 0; color: var(--muted); }
-    .bench {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 0.9rem;
-    }
-    #published-projects { display: contents; }
-    .card {
-      position: relative;
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      padding: 1.15rem 1.15rem 1rem;
-      box-shadow: var(--shadow);
-      transition: border-color 0.18s ease, transform 0.18s ease, background 0.18s ease;
-    }
-    a.card {
-      display: block;
-      color: inherit;
-      text-decoration: none;
-      cursor: pointer;
-    }
-    .card.just-added { animation: arrive 0.35s ease; }
-    @keyframes arrive {
-      from { opacity: 0; transform: translateY(8px); }
-      to { opacity: 1; transform: none; }
-    }
-    [data-theme="atlas"] .card:hover { border-color: var(--accent); }
-    [data-theme="field"] .card {
-      background:
-        linear-gradient(var(--accent), var(--accent)) 12px 12px / 14px 1px no-repeat,
-        linear-gradient(var(--accent), var(--accent)) 12px 12px / 1px 14px no-repeat,
-        linear-gradient(var(--accent), var(--accent)) calc(100% - 12px) 12px / 14px 1px no-repeat,
-        linear-gradient(var(--accent), var(--accent)) calc(100% - 12px) 12px / 1px 14px no-repeat,
-        linear-gradient(var(--accent), var(--accent)) 12px calc(100% - 12px) / 14px 1px no-repeat,
-        linear-gradient(var(--accent), var(--accent)) 12px calc(100% - 12px) / 1px 14px no-repeat,
-        linear-gradient(var(--accent), var(--accent)) calc(100% - 12px) calc(100% - 12px) / 14px 1px no-repeat,
-        linear-gradient(var(--accent), var(--accent)) calc(100% - 12px) calc(100% - 12px) / 1px 14px no-repeat,
-        var(--card);
-      transition: background-size 0.2s ease, transform 0.2s ease;
-    }
-    [data-theme="field"] .card:hover {
-      transform: translateY(-2px);
-      background-size: 22px 1px, 1px 22px, 22px 1px, 1px 22px, 22px 1px, 1px 22px, 22px 1px, 1px 22px, auto;
-    }
-    [data-theme="atrium"] .bench { display: flex; flex-direction: column; gap: 0.85rem; }
-    [data-theme="atrium"] .card {
-      display: grid;
-      grid-template-columns: 8rem 1fr auto;
-      column-gap: 1.25rem;
-      align-items: center;
-      overflow: hidden;
-    }
-    [data-theme="atrium"] .card::before {
-      content: "";
-      position: absolute;
-      left: 0;
-      top: 0;
-      bottom: 0;
-      width: 3px;
-      background: var(--accent);
-      transform: scaleY(0);
-      transform-origin: top;
-      transition: transform 0.35s ease;
-    }
-    [data-theme="atrium"] .card:hover::before { transform: scaleY(1); }
-    [data-theme="atrium"] .preview { grid-column: 1 / -1; grid-row: 1; }
-    [data-theme="atrium"] .tag { grid-column: 1; grid-row: 2; }
-    [data-theme="atrium"] .card h3 { grid-column: 2; grid-row: 2; margin-bottom: 0.2rem; }
-    [data-theme="atrium"] .card .summary { grid-column: 2; grid-row: 3; }
-    [data-theme="atrium"] .card-actions { grid-column: 3; grid-row: 2 / span 2; }
-    [data-theme="atrium"] .reveal-run {
-      animation: unveil 0.8s cubic-bezier(0.16, 0.84, 0.28, 1) both;
-      animation-delay: var(--reveal-delay, 0ms);
-    }
-    @keyframes unveil {
-      from {
-        opacity: 0;
-        transform: translateY(-0.7em);
-        clip-path: inset(0 0 100% 0);
-      }
-      to {
-        opacity: 1;
-        transform: none;
-        clip-path: inset(0 0 -0.2em 0);
-      }
-    }
-    .preview {
-      position: relative;
-      height: 168px;
-      margin-bottom: 0.9rem;
-      overflow: hidden;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: color-mix(in srgb, var(--line) 45%, var(--bg));
-    }
-    .preview img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-    .preview iframe {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 1280px;
-      border: 0;
-      transform-origin: top left;
-      pointer-events: none;
-      z-index: 1;
-      background: transparent;
-    }
-    .preview-note {
-      position: absolute;
-      inset: 0;
-      display: grid;
-      place-items: center;
-      margin: 0;
-      padding: 1rem;
-      text-align: center;
-      color: var(--muted);
-      font-size: 0.92rem;
-    }
-    .tag {
-      display: inline-block;
-      margin: 0 0 0.7rem;
-      font-family: var(--mono);
-      font-size: 0.72rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--accent);
-    }
-    [data-theme="atrium"] .tag { margin: 0; color: var(--accent); }
-    .card h3 {
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-      margin: 0 0 0.35rem;
-      font-family: var(--display);
-      font-size: 1.35rem;
-      font-weight: 600;
-      letter-spacing: -0.02em;
-    }
-    .new-tab {
-      width: 0.85em;
-      height: 0.85em;
-      flex: none;
-      color: var(--muted);
-    }
-    .visually-hidden {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      white-space: nowrap;
-      border: 0;
-    }
-    .summary { margin: 0 0 1rem; color: var(--muted); }
-    [data-theme="atrium"] .summary { margin-bottom: 0; }
-    .card-actions { display: flex; gap: 0.85rem; align-items: center; }
-    a.launch, button.launch, button.primary, button.secondary {
-      font: inherit;
-      font-weight: 600;
-      border-radius: 999px;
-      cursor: pointer;
-    }
-    a.launch, button.launch, button.primary {
-      display: inline-flex;
-      align-items: center;
-      background: var(--accent);
-      color: var(--accent-ink);
-      text-decoration: none;
-      border: 0;
-      padding: 0.45rem 0.85rem;
-    }
-    button.primary { padding: 0.6rem 1rem; }
-    a.launch:hover, button.launch:hover, button.primary:hover { filter: brightness(1.08); }
-    button.primary:disabled { opacity: 0.55; }
-    button.secondary {
-      background: transparent;
-      color: var(--ink);
-      border: 1px solid var(--line);
-      padding: 0.55rem 0.9rem;
-    }
-    button.quiet {
-      background: none;
-      border: 0;
-      padding: 0;
-      color: var(--muted);
-      font: inherit;
-      cursor: pointer;
-    }
-    button.quiet:hover { color: var(--ink); }
-    :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
-    dialog {
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      padding: 1.4rem;
-      width: min(32rem, calc(100% - 2rem));
-      max-height: calc(100vh - 2rem);
-      overflow: auto;
-      background: var(--card);
-      color: var(--ink);
-    }
-    [data-theme="atlas"] dialog { background: #161f2b; }
-    [data-theme="atrium"] dialog { background: #fff; }
-    dialog::backdrop { background: rgba(8, 12, 18, 0.55); }
-    dialog h3 { margin: 0; font-family: var(--display); font-size: 1.7rem; }
-    dialog p { color: var(--muted); }
-    fieldset { border: 0; margin: 0.75rem 0; padding: 0; display: flex; gap: 1rem; }
-    label { display: block; font-weight: 600; margin: 0.75rem 0; }
-    fieldset label { margin: 0; font-weight: 500; }
-    [hidden] { display: none !important; }
-    input[type="text"], input[type="url"], input[type="file"], textarea {
-      display: block;
-      width: 100%;
-      margin-top: 0.35rem;
-      font: inherit;
-      padding: 0.55rem 0.7rem;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: var(--bg);
-      color: var(--ink);
-    }
-    .dialog-actions { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
-    .error { color: #e15b5b; min-height: 1.5rem; }
-    .hint { color: var(--muted); font-weight: 500; font-size: 0.9rem; }
-    @media (max-width: 720px) {
-      .wrap { padding-top: 2rem; }
-      [data-theme="atrium"] .card { grid-template-columns: 1fr; }
-      [data-theme="atrium"] .preview,
-      [data-theme="atrium"] .tag,
-      [data-theme="atrium"] .card h3,
-      [data-theme="atrium"] .card .summary,
-      [data-theme="atrium"] .card-actions { grid-column: 1; grid-row: auto; }
-      [data-theme="atrium"] .card-actions { margin-top: 0.8rem; }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after { animation: none !important; transition: none !important; }
-      [data-theme="atlas"] body { background: var(--bg); }
-    }
-  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/site.css">
 </head>
 <body>
-  <div class="preview-bar">
-    <p class="preview-label">Compare designs</p>
-    <div class="theme-switch" role="radiogroup" aria-label="Site design">
-      <button type="button" role="radio" data-choice="atlas" aria-checked="false">Atlas</button>
-      <button type="button" role="radio" data-choice="atrium" aria-checked="false">Atrium</button>
-      <button type="button" role="radio" data-choice="field" aria-checked="false">Field</button>
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a class="brand" href="/">
+        <span class="brand-name">Living Lab</span>
+        <span class="brand-sub">Human Agency and AI, Penn GSE</span>
+      </a>
+      <nav class="site-nav" aria-label="Site">
+        <a href="/" aria-current="page">Home</a>
+        <a href="/projects/">Projects</a>
+        <a href="/team/">Team</a>
+        <a href="/events/">Events</a>
+        <span class="nav-later">Publications<span class="visually-hidden">, coming later</span></span>
+        <span class="nav-later">AI Tinkery<span class="visually-hidden">, coming later</span></span>
+        <span class="nav-later">Podcast<span class="visually-hidden">, coming later</span></span>
+        <span class="nav-later">Newsletter<span class="visually-hidden">, coming later</span></span>
+        <span class="nav-later">Academics<span class="visually-hidden">, coming later</span></span>
+      </nav>
     </div>
-  </div>
+  </header>
 
-  <div class="wrap">
-    <nav class="site-nav" aria-label="Site">
-      <a href="/" aria-current="page">Projects</a>
-      <a href="/team/">Team</a>
-    </nav>
-    <header>
-      <p class="eyebrow reveal">Research lab</p>
-      <h1 class="reveal">Living Lab</h1>
-      <p class="subtitle reveal">Graduate student projects and prototypes.</p>
-    </header>
+  <main class="page">
+    <section class="hero" aria-labelledby="hero-title">
+      <h1 id="hero-title">Living Laboratory for Human Agency and AI</h1>
+      <p>A research lab at the Penn Graduate School of Education studying how people can keep agency as AI becomes part of learning, teaching and research.</p>
+      <a class="button" href="/events/">See events</a>
+    </section>
 
-    <main>
-      <div class="section-head">
-        <div>
-          <h2 class="reveal">Projects</h2>
-          <p class="bench-count reveal" id="bench-count" aria-live="polite"></p>
-        </div>
-      </div>
+    <a class="event-card" id="next-event" href="/events/" hidden></a>
+    <p class="empty" id="events-empty" hidden>No upcoming events.</p>
 
-      <div class="bench" id="project-bench">
-        <div id="published-projects"></div>
-      </div>
-      <p class="empty" id="projects-empty" hidden>No projects yet. Add one in Pages CMS with a live site link.</p>
-    </main>
-  </div>
+    <h2 class="section-title">Five pillars</h2>
+    <div class="pillars">
+      <article class="pillar">
+        <h3>People First</h3>
+        <p>Technology that strengthens human judgment, creativity and relationships.</p>
+        <p class="later-link">Browse related publications<span class="visually-hidden">, coming later</span></p>
+      </article>
+      <article class="pillar">
+        <h3>Trust, Safety, and Ethics</h3>
+        <p>Transparent, responsible AI use in learning settings.</p>
+        <p class="later-link">Browse related publications<span class="visually-hidden">, coming later</span></p>
+      </article>
+      <article class="pillar">
+        <h3>AI Literacy and Pedagogy</h3>
+        <p>Helping educators and learners understand and teach with AI.</p>
+        <p class="later-link">Browse related publications<span class="visually-hidden">, coming later</span></p>
+      </article>
+      <article class="pillar">
+        <h3>Practice-Driven Innovation</h3>
+        <p>Tools and studies built alongside schools and classrooms.</p>
+        <p class="later-link">Browse related publications<span class="visually-hidden">, coming later</span></p>
+      </article>
+      <article class="pillar">
+        <h3>Infrastructure for Scale</h3>
+        <p>Shared platforms that let good ideas spread.</p>
+        <p class="later-link">Browse related publications<span class="visually-hidden">, coming later</span></p>
+      </article>
+    </div>
+  </main>
 
   <script>
-    const THEME_KEY = "living-lab-theme";
-    const publishedList = document.querySelector("#published-projects");
-    const count = document.querySelector("#bench-count");
-    const empty = document.querySelector("#projects-empty");
-    const motionOK = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const nextEvent = document.querySelector("#next-event");
+    const empty = document.querySelector("#events-empty");
 
-    function applyTheme(name) {
-      const theme = name === "atrium" || name === "archive" || name === "field" ? (name === "archive" ? "atrium" : name) : "atlas";
-      document.documentElement.dataset.theme = theme;
-      localStorage.setItem(THEME_KEY, theme);
-      document.querySelectorAll(".theme-switch button").forEach((button) => {
-        button.setAttribute("aria-checked", button.dataset.choice === theme ? "true" : "false");
-      });
+    function dateKey(value) {
+      const text = String(value || "").slice(0, 10);
+      return /^\d{4}-\d{2}-\d{2}$/.test(text) ? text : "";
     }
 
-    function playEntrance() {
-      const nodes = document.querySelectorAll(".wrap .reveal");
-      const run = document.documentElement.dataset.theme === "atrium" && motionOK;
-      nodes.forEach((node, index) => {
-        node.classList.remove("reveal-run");
-        node.style.setProperty("--reveal-delay", `${index * 90}ms`);
-      });
-      if (!run) return;
-      void document.body.offsetWidth;
-      nodes.forEach((node) => node.classList.add("reveal-run"));
+    function formatDate(key) {
+      const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      const [year, month, day] = key.split("-").map(Number);
+      return `${months[month - 1]} ${day}, ${year}`;
     }
 
-    document.querySelectorAll(".theme-switch button").forEach((button) => {
-      button.addEventListener("click", () => {
-        applyTheme(button.dataset.choice);
-        playEntrance();
-      });
-    });
-    applyTheme(document.documentElement.dataset.theme);
-
-    if (motionOK) {
-      document.addEventListener("pointermove", (event) => {
-        if (document.documentElement.dataset.theme !== "atlas") return;
-        if (event.pointerType && event.pointerType !== "mouse") return;
-        document.documentElement.style.setProperty("--mx", `${event.clientX}px`);
-        document.documentElement.style.setProperty("--my", `${event.clientY}px`);
-      });
+    function todayKey() {
+      const now = new Date();
+      const month = String(now.getMonth() + 1).padStart(2, "0");
+      const day = String(now.getDate()).padStart(2, "0");
+      return `${now.getFullYear()}-${month}-${day}`;
     }
 
-    function assetUrl(value) {
-      if (!value) return "";
-      const splitAt = value.search(/[?#]/);
-      const filePath = splitAt === -1 ? value : value.slice(0, splitAt);
-      const suffix = splitAt === -1 ? "" : value.slice(splitAt);
-      return filePath.split("/").map((part, index) => (index === 0 ? part : encodeURIComponent(part))).join("/") + suffix;
-    }
-
-    async function loadPublished() {
-      try {
-        const response = await fetch("projects.json", { cache: "no-store" });
-        if (!response.ok) return [];
-        const data = await response.json();
-        return Array.isArray(data) ? data : [];
-      } catch {
-        return [];
+    function showNext(events) {
+      const today = todayKey();
+      const upcoming = events
+        .map((event) => ({ ...event, key: dateKey(event.date) }))
+        .filter((event) => event.title && event.key >= today)
+        .sort((a, b) => a.key.localeCompare(b.key));
+      const event = upcoming[0];
+      if (!event) {
+        empty.hidden = false;
+        return;
       }
-    }
 
-    function renderPublished(projects) {
-      publishedList.replaceChildren();
-      const visible = projects.filter((project) => /^https?:\/\//i.test(project.live_link || ""));
-      count.textContent = visible.length === 1 ? "1 project" : `${visible.length} projects`;
-      empty.hidden = visible.length > 0;
-      for (const project of visible) {
-        const liveLink = /^https?:\/\//i.test(project.live_link || "") ? project.live_link : "";
-        const card = document.createElement(liveLink ? "a" : "article");
-        card.className = "card reveal";
-        card.dataset.kind = liveLink ? "live" : "published";
-        if (liveLink) {
-          card.href = liveLink;
-          card.target = "_blank";
-          card.rel = "noopener noreferrer";
-        }
-
-        const preview = document.createElement("div");
-        preview.className = "preview";
-        if (project.thumbnail) {
-          const image = document.createElement("img");
-          image.src = assetUrl(project.thumbnail);
-          image.alt = "";
-          preview.append(image);
-        }
-
-        const tag = document.createElement("p");
-        tag.className = "tag";
-        tag.textContent = project.author || "Project";
-
-        const title = document.createElement("h3");
-        title.textContent = project.title;
-        if (liveLink) {
-          const icon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-          icon.setAttribute("class", "new-tab");
-          icon.setAttribute("viewBox", "0 0 24 24");
-          icon.setAttribute("aria-hidden", "true");
-          icon.innerHTML = '<path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M15 3h6v6"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M10 14 21 3"/>';
-          title.append(icon);
-          const hint = document.createElement("span");
-          hint.className = "visually-hidden";
-          hint.textContent = "Opens in a new tab";
-          title.append(hint);
-        }
-
-        const summary = document.createElement("p");
-        summary.className = "summary";
-        summary.textContent = project.description || "";
-        if (!project.description) summary.hidden = true;
-
-        card.append(preview, tag, title, summary);
-        publishedList.append(card);
+      const kicker = document.createElement("p");
+      kicker.className = "kicker";
+      kicker.textContent = `Next event, ${formatDate(event.key)}`;
+      if (event.sample) {
+        const sample = document.createElement("span");
+        sample.className = "sample";
+        sample.textContent = "Sample";
+        kicker.append(sample);
       }
+
+      const title = document.createElement("h2");
+      title.textContent = event.title;
+
+      nextEvent.append(kicker, title);
+      if (event.location) {
+        const where = document.createElement("p");
+        where.className = "where";
+        where.textContent = event.location;
+        nextEvent.append(where);
+      }
+      nextEvent.hidden = false;
     }
 
-    loadPublished().then((projects) => {
-      renderPublished(projects);
-      playEntrance();
-    });
+    fetch("/events.json", { cache: "no-store" })
+      .then((response) => (response.ok ? response.json() : []))
+      .then((data) => showNext(Array.isArray(data) ? data : []))
+      .catch(() => {
+        empty.hidden = false;
+      });
   </script>
 </body>
 </html>

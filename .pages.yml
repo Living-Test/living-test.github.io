@@ -60,3 +60,32 @@ content:
         label: Link
         type: string
         hint: Optional site or email. This does not create a profile page.
+
+  - name: events
+    label: Events
+    type: file
+    path: events.json
+    format: json
+    list: true
+    view:
+      primary: title
+      fields: [title, date]
+    fields:
+      - name: title
+        label: Title
+        type: string
+        required: true
+      - name: date
+        label: Date
+        type: date
+        required: true
+      - name: location
+        label: Location
+        type: string
+      - name: summary
+        label: Summary
+        type: text
+      - name: sample
+        label: Sample placeholder
+        type: boolean
+        hint: Turn this on while the event is stand-in copy. The site shows a Sample label.
