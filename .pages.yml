@@ -87,7 +87,7 @@ content:
         type: select
         required: true
         options:
-          values: ["Leadership Team", "Affiliated Member", "Lab Member"]
+          values: ["Leadership Team", "Participating Faculty", "Current Lab Member", "Lab Alumni"]
       - name: focused_role
         label: Focused Role
         type: string
