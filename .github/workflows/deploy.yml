@@ -33,7 +33,7 @@ jobs:
         run: node scripts/build.js
 
       - name: Upload build folder
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: './dist'
 
