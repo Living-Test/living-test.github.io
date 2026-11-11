@@ -85,7 +85,7 @@ content:
         when:
           field: project_type
           equals: html
-        description: Upload an HTML file for this project.
+        description: Upload an HTML file here for this project.
         options:
           media: project-html
           extensions: [html, htm]
