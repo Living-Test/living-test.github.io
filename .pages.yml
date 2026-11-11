@@ -17,9 +17,20 @@ content:
         type: string
         required: true
       - name: author
-        label: Author
+        label: Team Authors
+        type: reference
+        required: false
+        options:
+          collection: team
+          multiple: true
+          value: "{fields.name}"
+          label: "{fields.name}"
+          search: [fields.name]          
+      - name: guest_authors
+        label: Guest Authors
         type: string
-        required: true
+        list: true
+        description: Manually type names of authors not in the Team collection.
       - name: description
         label: Description
         type: text
