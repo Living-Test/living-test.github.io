@@ -67,7 +67,10 @@ content:
     type: file
     path: team.json
     format: json
-    list: true
+    list:
+      collapsible:
+        collapsed: true
+        summary: "{name} - {role}"
     view:
       primary: name
       fields: [name, role, focus]
