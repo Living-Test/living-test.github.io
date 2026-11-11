@@ -76,7 +76,7 @@ content:
     filename: "{primary}.json" # Each member gets their own file (e.g., jane-doe.json)
     view:
       primary: name
-      fields: [name, role, focus]
+      fields: [name, role, focused_role]
     fields:
       - name: name
         label: Name
