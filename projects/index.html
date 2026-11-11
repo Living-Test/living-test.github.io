@@ -69,7 +69,7 @@
     function canOpen(href) {
       if (/^https?:\/\//i.test(href)) return true;
       const pathOnly = href.split(/[?#]/)[0];
-      return pathOnly.startsWith("/projects/media/") && !pathOnly.includes("..") && /\.html?$/i.test(pathOnly);
+      return pathOnly.startsWith("/projects/html/") && !pathOnly.includes("..") && /\.html?$/i.test(pathOnly);
     }
 
     function render(projects) {

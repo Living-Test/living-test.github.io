@@ -1,6 +1,25 @@
 media:
-  input: projects/media   # Where uploaded images are saved in GitHub
-  output: /projects/media # The URL path used on the live website
+  - name: projects
+    label: Project images
+    input: media/projects
+    output: /media/projects
+    categories: [image]
+  - name: team
+    label: Team photos
+    input: media/team
+    output: /media/team
+    categories: [image]
+  - name: events
+    label: Event images
+    input: media/events
+    output: /media/events
+    categories: [image]
+  - name: project-html
+    label: Project HTML
+    input: projects/html
+    output: /projects/html
+    extensions: [html, htm]
+    rename: safe
 
 content:
   - name: projects
@@ -37,6 +56,8 @@ content:
       - name: thumbnail
         label: Thumbnail Image
         type: image
+        options:
+          media: projects
       - name: project_type
         label: Project type
         type: select
@@ -66,6 +87,7 @@ content:
           equals: html
         description: Upload an HTML file for this project.
         options:
+          media: project-html
           extensions: [html, htm]
           rename: safe
 
@@ -94,6 +116,8 @@ content:
       - name: photo
         label: Photo
         type: image
+        options:
+          media: team
       - name: link
         label: Link
         type: string

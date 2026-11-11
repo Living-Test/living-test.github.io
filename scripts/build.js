@@ -24,6 +24,7 @@ fs.mkdirSync(path.join(dist, "team"), { recursive: true });
 fs.copyFileSync(path.join(root, "team", "index.html"), path.join(dist, "team", "index.html"));
 fs.copyFileSync(path.join(root, "events.json"), path.join(dist, "events.json"));
 copyDir(path.join(root, "assets"), path.join(dist, "assets"));
+copyDir(path.join(root, "media"), path.join(dist, "media"));
 copyDir(path.join(root, "projects"), path.join(dist, "projects"));
 copyDir(path.join(root, "events"), path.join(dist, "events"));
 
@@ -43,8 +44,8 @@ function localHtmlPath(value) {
   const queryAt = value.search(/[?#]/);
   const filePath = (queryAt === -1 ? value : value.slice(0, queryAt)).replace(/\\/g, "/");
   const suffix = queryAt === -1 ? "" : value.slice(queryAt);
-  const withSlash = filePath.startsWith("projects/media/") ? `/${filePath}` : filePath;
-  if (!withSlash.startsWith("/projects/media/") || withSlash.includes("..") || !/\.html?$/i.test(withSlash)) return "";
+  const withSlash = filePath.startsWith("projects/html/") ? `/${filePath}` : filePath;
+  if (!withSlash.startsWith("/projects/html/") || withSlash.includes("..") || !/\.html?$/i.test(withSlash)) return "";
   return withSlash + suffix;
 }
 
@@ -139,4 +140,4 @@ if (team.length > 0) {
   fs.writeFileSync(path.join(dist, "team.json"), "[]\n");
   console.log("No team members found; wrote an empty team.json to dist/");
 }
-console.log("Copied index.html, assets/, team/, events/, and projects/ to dist/");
+console.log("Copied index.html, assets/, media/, team/, events/, and projects/ to dist/");
