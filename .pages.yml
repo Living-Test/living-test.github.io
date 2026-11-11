@@ -64,13 +64,9 @@ content:
 
   - name: team
     label: Team
-    type: file
-    path: team.json
-    format: json
-    list:
-      collapsible:
-        collapsed: true
-        summary: "{name} - {role}"
+    type: collection
+    path: team            
+    filename: "{primary}.json" # Each member gets their own file (e.g., jane-doe.json)
     view:
       primary: name
       fields: [name, role, focus]
