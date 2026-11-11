@@ -17,7 +17,7 @@ content:
         type: string
         required: true
       - name: author
-        label: Team Authors
+        label: Living Lab Team Authors
         type: reference
         required: false
         options:
