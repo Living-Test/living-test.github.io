@@ -1,15 +1,21 @@
 [
   {
     "title": "Base44",
-    "author": "a",
-    "description": "https://penn-path-pick.base44.app",
+    "authors": [],
+    "guest_authors": [
+      "test"
+    ],
+    "description": "Course recommender from one prompt",
     "thumbnail": "",
     "project_type": "app",
     "live_link": "https://penn-path-pick.base44.app"
   },
   {
     "title": "Claude",
-    "author": "public",
+    "authors": [
+      "public"
+    ],
+    "guest_authors": [],
     "description": "Get ready to have your mind bent with this 3D physics simulation. It’s like someone gave AI the keys to a virtual sandbox and said, “Go wild!”",
     "thumbnail": "",
     "project_type": "app",
@@ -17,18 +23,48 @@
   },
   {
     "title": "Claude2",
-    "author": "madewithclaude",
+    "authors": [],
+    "guest_authors": [
+      "Someone"
+    ],
     "description": "Ever fancied yourself as a rocket scientist? Well, now’s your chance! This simulator lets you try your hand at landing a SpaceX rocket.",
     "thumbnail": "",
     "project_type": "app",
     "live_link": "https://claude.ai/public/artifacts/590d0d2a-da07-4a08-9c83-2d3d11b4f63f"
   },
   {
-    "title": "Lovable",
-    "author": "AIED",
+    "title": "Firefly Jar",
+    "authors": [
+      "Andrew"
+    ],
+    "guest_authors": [],
+    "description": "",
+    "thumbnail": "",
+    "project_type": "html",
+    "live_link": "/projects/media/firefly-jar.html"
+  },
+  {
+    "title": "Lovable PAPI Wiki",
+    "authors": [
+      "Cina He"
+    ],
+    "guest_authors": [
+      "Colin Tomey"
+    ],
     "description": "",
     "thumbnail": "",
     "project_type": "app",
     "live_link": "https://wiki.pennai-pedagogy.org/"
+  },
+  {
+    "title": "Penn GSE AI research ecological map v1",
+    "authors": [
+      "Nam"
+    ],
+    "guest_authors": [],
+    "description": "test",
+    "thumbnail": "",
+    "project_type": "app",
+    "live_link": "https://claude.ai/artifact/1AvRdPzJcL3ZSjHYiB1aHX"
   }
 ]

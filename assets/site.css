@@ -123,7 +123,7 @@ a { color: inherit; }
 .event-card h2,
 .pillar h3,
 .card h2,
-.person h2 {
+.person h3 {
   margin: 0;
   font-weight: 700;
   letter-spacing: -0.03em;
@@ -237,7 +237,7 @@ a.event-card:hover { border-color: #7d90ad; }
 
 .pillar h3,
 .card h2,
-.person h2 { font-size: 1.12rem; }
+.person h3 { font-size: 1.12rem; }
 
 .pillar p,
 .later-link { margin: 0.45rem 0 0; }
@@ -305,10 +305,19 @@ a.event-card:hover { border-color: #7d90ad; }
   object-fit: cover;
 }
 
-.card-kicker {
-  margin: 0 0 0.3rem;
-  color: #c5d0e2;
-  font-size: 0.92rem;
+.byline {
+  margin: 0.35rem 0 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.team-group + .team-group { margin-top: 1.75rem; }
+
+.role-title {
+  margin: 0 0 0.8rem;
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
 }
 
 a.card {
@@ -352,7 +361,7 @@ a.person:hover { border-color: #7d90ad; }
   font-weight: 700;
 }
 
-.person h2,
+.person h3,
 .card h2 {
   display: flex;
   align-items: center;

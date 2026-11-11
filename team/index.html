@@ -34,7 +34,7 @@
     <h1 class="page-title">Team</h1>
     <p class="page-lead">People in the lab.</p>
     <p class="count" id="team-count" aria-live="polite"></p>
-    <div class="people" id="people"></div>
+    <div id="people"></div>
     <p class="empty" id="team-empty" hidden>No team members yet. Add them in Pages CMS.</p>
   </main>
 
@@ -80,66 +80,82 @@
       return icon;
     }
 
+    const roleOrder = ["Leadership Team", "Participating Faculty", "Current Lab Member", "Lab Alumni"];
+
+    function personCard(person) {
+      const link = contact(person.link);
+      const card = document.createElement(link ? "a" : "article");
+      card.className = "person";
+      if (link) {
+        card.href = link.href;
+        if (link.external) {
+          card.target = "_blank";
+          card.rel = "noopener noreferrer";
+        }
+      }
+
+      const photo = photoPath(person.photo);
+      if (photo) {
+        const image = document.createElement("img");
+        image.className = "portrait";
+        image.src = assetUrl(photo);
+        image.alt = "";
+        card.append(image);
+      } else {
+        const mark = document.createElement("div");
+        mark.className = "initials";
+        mark.setAttribute("aria-hidden", "true");
+        mark.textContent = initials(person.name);
+        card.append(mark);
+      }
+
+      const body = document.createElement("div");
+      const name = document.createElement("h3");
+      name.textContent = person.name;
+      if (link && link.external) {
+        name.append(externalIcon());
+        const hint = document.createElement("span");
+        hint.className = "visually-hidden";
+        hint.textContent = "Opens in a new tab";
+        name.append(hint);
+      }
+      body.append(name);
+      const detail = person.focused_role || person.focus || "";
+      if (detail && detail !== person.role) {
+        const focus = document.createElement("p");
+        focus.className = "focus";
+        focus.textContent = detail;
+        body.append(focus);
+      }
+      card.append(body);
+      return card;
+    }
+
     function render(members) {
       list.replaceChildren();
-      const people = members
-        .filter((person) => person && person.name)
-        .sort((a, b) => a.name.localeCompare(b.name));
+      const people = members.filter((person) => person && person.name);
       count.textContent = people.length === 1 ? "1 person" : `${people.length} people`;
       empty.hidden = people.length > 0;
 
+      const groups = new Map();
       for (const person of people) {
-        const link = contact(person.link);
-        const card = document.createElement(link ? "a" : "article");
-        card.className = "person";
-        if (link) {
-          card.href = link.href;
-          if (link.external) {
-            card.target = "_blank";
-            card.rel = "noopener noreferrer";
-          }
-        }
-
-        const photo = photoPath(person.photo);
-        if (photo) {
-          const image = document.createElement("img");
-          image.className = "portrait";
-          image.src = assetUrl(photo);
-          image.alt = "";
-          card.append(image);
-        } else {
-          const mark = document.createElement("div");
-          mark.className = "initials";
-          mark.setAttribute("aria-hidden", "true");
-          mark.textContent = initials(person.name);
-          card.append(mark);
-        }
-
-        const body = document.createElement("div");
-        const name = document.createElement("h2");
-        name.textContent = person.name;
-        if (link && link.external) {
-          name.append(externalIcon());
-          const hint = document.createElement("span");
-          hint.className = "visually-hidden";
-          hint.textContent = "Opens in a new tab";
-          name.append(hint);
-        }
-        body.append(name);
-        if (person.role) {
-          const role = document.createElement("p");
-          role.className = "role";
-          role.textContent = person.role;
-          body.append(role);
-        }
-        if (person.focus) {
-          const focus = document.createElement("p");
-          focus.className = "focus";
-          focus.textContent = person.focus;
-          body.append(focus);
-        }
-        card.append(body);
-        list.append(card);
+        const role = person.role || "Team";
+        if (!groups.has(role)) groups.set(role, []);
+        groups.get(role).push(person);
+      }
+      const extraRoles = [...groups.keys()].filter((role) => !roleOrder.includes(role)).sort((a, b) => a.localeCompare(b));
+      for (const role of roleOrder.filter((role) => groups.has(role)).concat(extraRoles)) {
+        const section = document.createElement("section");
+        section.className = "team-group";
+        const heading = document.createElement("h2");
+        heading.className = "role-title";
+        heading.textContent = role;
+        const grid = document.createElement("div");
+        grid.className = "people";
+        const group = groups.get(role).sort((a, b) => a.name.localeCompare(b.name));
+        for (const person of group) grid.append(personCard(person));
+        section.append(heading, grid);
+        list.append(section);
       }
     }
 

@@ -22,7 +22,6 @@ for (const entry of fs.readdirSync(dist)) {
 fs.copyFileSync(path.join(root, "index.html"), path.join(dist, "index.html"));
 fs.mkdirSync(path.join(dist, "team"), { recursive: true });
 fs.copyFileSync(path.join(root, "team", "index.html"), path.join(dist, "team", "index.html"));
-fs.copyFileSync(path.join(root, "team.json"), path.join(dist, "team.json"));
 fs.copyFileSync(path.join(root, "events.json"), path.join(dist, "events.json"));
 copyDir(path.join(root, "assets"), path.join(dist, "assets"));
 copyDir(path.join(root, "projects"), path.join(dist, "projects"));
@@ -56,6 +55,22 @@ function projectType(value) {
   return "";
 }
 
+function nameList(value) {
+  if (!value) return [];
+  const items = Array.isArray(value) ? value : [value];
+  return items.flatMap((item) => {
+    if (typeof item === "string") {
+      const text = item.trim();
+      return text ? [text] : [];
+    }
+    if (item && typeof item === "object") {
+      const text = String(item.name || item.label || item.value || "").trim();
+      return text ? [text] : [];
+    }
+    return [];
+  });
+}
+
 function projectLink(project) {
   const type = projectType(project.project_type);
   const appLink = fieldValue(project.live_link);
@@ -78,7 +93,8 @@ if (fs.existsSync(projectsDir)) {
     if (!project.title || !liveLink) continue;
     projects.push({
       title: String(project.title),
-      author: project.author ? String(project.author) : "",
+      authors: nameList(project.author),
+      guest_authors: nameList(project.guest_authors),
       description: String(description),
       thumbnail: project.thumbnail ? String(project.thumbnail) : "",
       project_type: projectType(project.project_type) || (isHttp(liveLink) ? "app" : "html"),
@@ -91,4 +107,36 @@ const manifest = JSON.stringify(projects, null, 2);
 fs.writeFileSync(path.join(dist, "projects.json"), manifest);
 fs.writeFileSync(path.join(root, "projects.json"), manifest);
 console.log(`Wrote ${projects.length} project(s) to projects.json`);
+
+const teamDir = path.join(root, "team");
+const rootTeamPath = path.join(root, "team.json");
+const team = [];
+if (fs.existsSync(teamDir)) {
+  for (const name of fs.readdirSync(teamDir)) {
+    if (!name.endsWith(".json")) continue;
+    const person = JSON.parse(fs.readFileSync(path.join(teamDir, name), "utf8"));
+    if (!person || !person.name) continue;
+    team.push({
+      name: String(person.name),
+      role: person.role ? String(person.role) : "",
+      focused_role: person.focused_role ? String(person.focused_role) : (person.focus ? String(person.focus) : ""),
+      photo: fieldValue(person.photo),
+      link: person.link ? String(person.link).trim() : ""
+    });
+  }
+}
+if (team.length > 0) {
+  const teamManifest = JSON.stringify(team, null, 2);
+  fs.writeFileSync(path.join(dist, "team.json"), teamManifest);
+  fs.writeFileSync(rootTeamPath, teamManifest);
+  console.log(`Wrote ${team.length} team member(s) to team.json`);
+} else if (fs.existsSync(rootTeamPath)) {
+  fs.copyFileSync(rootTeamPath, path.join(dist, "team.json"));
+  const saved = JSON.parse(fs.readFileSync(rootTeamPath, "utf8"));
+  const count = Array.isArray(saved) ? saved.length : 0;
+  console.log(`No team member files found; copied existing team.json (${count} member(s)) to dist/`);
+} else {
+  fs.writeFileSync(path.join(dist, "team.json"), "[]\n");
+  console.log("No team members found; wrote an empty team.json to dist/");
+}
 console.log("Copied index.html, assets/, team/, events/, and projects/ to dist/");

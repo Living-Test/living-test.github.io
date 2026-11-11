@@ -60,6 +60,12 @@
       return icon;
     }
 
+    function nameList(value) {
+      if (!value) return [];
+      const items = Array.isArray(value) ? value : [value];
+      return items.map((item) => String(item || "").trim()).filter(Boolean);
+    }
+
     function canOpen(href) {
       if (/^https?:\/\//i.test(href)) return true;
       const pathOnly = href.split(/[?#]/)[0];
@@ -89,13 +95,6 @@
           card.append(preview);
         }
 
-        if (project.author) {
-          const author = document.createElement("p");
-          author.className = "card-kicker";
-          author.textContent = project.author;
-          card.append(author);
-        }
-
         const title = document.createElement("h2");
         title.textContent = project.title;
         title.append(externalIcon());
@@ -104,6 +103,21 @@
         hint.textContent = "Opens in a new tab";
         title.append(hint);
         card.append(title);
+
+        const authors = nameList(project.authors);
+        const guests = nameList(project.guest_authors);
+        if (authors.length) {
+          const byline = document.createElement("p");
+          byline.className = "byline";
+          byline.textContent = authors.join(", ");
+          card.append(byline);
+        }
+        if (guests.length) {
+          const byline = document.createElement("p");
+          byline.className = "byline";
+          byline.textContent = `Guest authors: ${guests.join(", ")}`;
+          card.append(byline);
+        }
 
         if (project.description) {
           const summary = document.createElement("p");
