@@ -1,5 +1,11 @@
 {
   "title": "Lovable PAPI Wiki",
-  "author": "AIED",
+  "author": [
+    "Cina He"
+  ],
+  "guest_authors": [
+    "Colin Tomey"
+  ],
+  "project_type": "app",
   "live_link": "https://wiki.pennai-pedagogy.org/"
 }
