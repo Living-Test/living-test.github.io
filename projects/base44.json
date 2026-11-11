@@ -1,6 +1,11 @@
 {
   "title": "Base44",
-  "author": "a",
+  "author": [
+    "a"
+  ],
+  "guest_authors": [
+    "test"
+  ],
   "description": "https://penn-path-pick.base44.app",
   "live_link": "https://penn-path-pick.base44.app"
 }
