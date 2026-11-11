@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>News · Living Lab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/site.css">
+</head>
+<body data-article="__ARTICLE_SLUG__">
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a class="brand" href="/">
+        <span class="brand-name">Living Lab</span>
+        <span class="brand-sub">Human Agency and AI, Penn GSE</span>
+      </a>
+      <nav class="site-nav" aria-label="Site">
+        <a href="/">Home</a>
+        <a href="/projects/">Projects</a>
+        <a href="/team/">Team</a>
+        <a href="/events/">Events</a>
+        <a href="/news/" aria-current="page">News</a>
+        <span class="nav-later">Publications<span class="visually-hidden">, coming later</span></span>
+        <span class="nav-later">AI Tinkery<span class="visually-hidden">, coming later</span></span>
+        <span class="nav-later">Podcast<span class="visually-hidden">, coming later</span></span>
+        <span class="nav-later">Newsletter<span class="visually-hidden">, coming later</span></span>
+        <span class="nav-later">Academics<span class="visually-hidden">, coming later</span></span>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page" id="article">
+    <p class="empty">This article could not be found.</p>
+  </main>
+
+  <script>
+    const slug = document.body.dataset.article;
+    const main = document.querySelector("#article");
+
+    function assetUrl(value) {
+      if (!value) return "";
+      const splitAt = value.search(/[?#]/);
+      const filePath = splitAt === -1 ? value : value.slice(0, splitAt);
+      const suffix = splitAt === -1 ? "" : value.slice(splitAt);
+      return filePath.split("/").map((part, index) => (index === 0 ? part : encodeURIComponent(part))).join("/") + suffix;
+    }
+
+    function formatDate(key) {
+      const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      const [year, month, day] = key.split("-").map(Number);
+      return `${months[month - 1]} ${day}, ${year}`;
+    }
+
+    function initials(name) {
+      return name.split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]).join("").toUpperCase();
+    }
+
+    function safeUrl(value) {
+      const text = String(value || "").trim();
+      if (/^https?:\/\//i.test(text)) return text;
+      if (text.startsWith("/") && !text.startsWith("//") && !text.includes("..")) return text;
+      return "";
+    }
+
+    function addInline(parent, text) {
+      const pattern = /!\[([^\]]*)\]\(([^)\s]+)\)|\[([^\]]+)\]\(([^)\s]+)\)|\*\*([^*]+)\*\*|\*([^*]+)\*|`([^`]+)`/g;
+      let last = 0;
+      let match;
+      while ((match = pattern.exec(text))) {
+        if (match.index > last) parent.append(document.createTextNode(text.slice(last, match.index)));
+        if (match[0].startsWith("!")) {
+          const src = safeUrl(match[2]);
+          if (src) {
+            const image = document.createElement("img");
+            image.src = assetUrl(src);
+            image.alt = match[1];
+            parent.append(image);
+          } else {
+            parent.append(document.createTextNode(match[1]));
+          }
+        } else if (match[3] !== undefined) {
+          const href = safeUrl(match[4]);
+          if (href) {
+            const link = document.createElement("a");
+            link.href = href;
+            link.textContent = match[3];
+            if (/^https?:/i.test(href)) {
+              link.target = "_blank";
+              link.rel = "noopener noreferrer";
+            }
+            parent.append(link);
+          } else {
+            parent.append(document.createTextNode(match[3]));
+          }
+        } else if (match[5] !== undefined) {
+          const strong = document.createElement("strong");
+          strong.textContent = match[5];
+          parent.append(strong);
+        } else if (match[6] !== undefined) {
+          const emphasis = document.createElement("em");
+          emphasis.textContent = match[6];
+          parent.append(emphasis);
+        } else if (match[7] !== undefined) {
+          const code = document.createElement("code");
+          code.textContent = match[7];
+          parent.append(code);
+        }
+        last = pattern.lastIndex;
+      }
+      if (last < text.length) parent.append(document.createTextNode(text.slice(last)));
+    }
+
+    function renderBody(target, source) {
+      const lines = String(source || "").replace(/\r\n/g, "\n").split("\n");
+      let index = 0;
+      while (index < lines.length) {
+        const line = lines[index];
+        if (!line.trim()) {
+          index += 1;
+          continue;
+        }
+        const heading = /^(#{1,3})\s+(.*)$/.exec(line);
+        if (heading) {
+          const element = document.createElement(`h${heading[1].length + 1}`);
+          addInline(element, heading[2]);
+          target.append(element);
+          index += 1;
+          continue;
+        }
+        if (/^[-*]\s+/.test(line)) {
+          const list = document.createElement("ul");
+          while (index < lines.length && /^[-*]\s+/.test(lines[index])) {
+            const item = document.createElement("li");
+            addInline(item, lines[index].replace(/^[-*]\s+/, ""));
+            list.append(item);
+            index += 1;
+          }
+          target.append(list);
+          continue;
+        }
+        if (/^\d+\.\s+/.test(line)) {
+          const list = document.createElement("ol");
+          while (index < lines.length && /^\d+\.\s+/.test(lines[index])) {
+            const item = document.createElement("li");
+            addInline(item, lines[index].replace(/^\d+\.\s+/, ""));
+            list.append(item);
+            index += 1;
+          }
+          target.append(list);
+          continue;
+        }
+        const paragraph = document.createElement("p");
+        const parts = [];
+        while (
+          index < lines.length &&
+          lines[index].trim() &&
+          !/^(#{1,3})\s+/.test(lines[index]) &&
+          !/^[-*]\s+/.test(lines[index]) &&
+          !/^\d+\.\s+/.test(lines[index])
+        ) {
+          parts.push(lines[index].trim());
+          index += 1;
+        }
+        addInline(paragraph, parts.join(" "));
+        target.append(paragraph);
+      }
+    }
+
+    function authorChip(author) {
+      const chip = document.createElement(author.link ? "a" : "div");
+      chip.className = "author-chip";
+      if (author.link) {
+        chip.href = author.link;
+        if (/^https?:\/\//i.test(author.link)) {
+          chip.target = "_blank";
+          chip.rel = "noopener noreferrer";
+        }
+      }
+      if (author.photo) {
+        const image = document.createElement("img");
+        image.className = "portrait";
+        image.src = assetUrl(author.photo);
+        image.alt = "";
+        chip.append(image);
+      } else {
+        const mark = document.createElement("div");
+        mark.className = "initials";
+        mark.setAttribute("aria-hidden", "true");
+        mark.textContent = initials(author.name);
+        chip.append(mark);
+      }
+      const name = document.createElement("span");
+      name.textContent = author.name;
+      chip.append(name);
+      return chip;
+    }
+
+    function show(article) {
+      document.title = `${article.title} · Living Lab`;
+      main.replaceChildren();
+
+      if (article.image) {
+        const image = document.createElement("img");
+        image.className = "article-hero";
+        image.src = assetUrl(article.image);
+        image.alt = "";
+        main.append(image);
+      }
+
+      const title = document.createElement("h1");
+      title.className = "page-title";
+      title.textContent = article.title;
+      main.append(title);
+
+      if (article.date) {
+        const date = document.createElement("p");
+        date.className = "article-date";
+        date.textContent = formatDate(article.date);
+        main.append(date);
+      }
+
+      const authors = Array.isArray(article.authors) ? article.authors.filter((author) => author && author.name) : [];
+      if (authors.length) {
+        const row = document.createElement("ul");
+        row.className = "author-row";
+        for (const author of authors) {
+          const item = document.createElement("li");
+          item.append(authorChip(author));
+          row.append(item);
+        }
+        main.append(row);
+      }
+
+      const guests = Array.isArray(article.guest_authors) ? article.guest_authors.filter(Boolean) : [];
+      if (authors.length || guests.length) {
+        let row = main.querySelector(".author-row");
+        if (!row) {
+          row = document.createElement("ul");
+          row.className = "author-row";
+          main.append(row);
+        }
+        for (const name of guests) {
+          const item = document.createElement("li");
+          item.append(authorChip({ name, photo: "", link: "" }));
+          row.append(item);
+        }
+      }
+
+      const body = document.createElement("div");
+      body.className = "article-body";
+      renderBody(body, article.body || article.summary || "");
+      main.append(body);
+    }
+
+    fetch("/news.json", { cache: "no-store" })
+      .then((response) => (response.ok ? response.json() : []))
+      .then((data) => {
+        const articles = Array.isArray(data) ? data : [];
+        const article = articles.find((item) => item && item.slug === slug);
+        if (article) show(article);
+      })
+      .catch(() => {});
+  </script>
+</body>
+</html>

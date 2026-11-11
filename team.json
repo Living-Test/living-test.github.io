@@ -1,9 +1,16 @@
 [
   {
-    "name": "Cina He",
-    "role": "Lab Member",
-    "focused_role": "PAPI Lab Fellow",
+    "name": "Andrew He",
+    "role": "Current Lab Member",
+    "focused_role": "",
     "photo": "",
+    "link": "https://www.linkedin.com/in/andrew-he-6b656b1b8/"
+  },
+  {
+    "name": "Cina He",
+    "role": "Current Lab Member",
+    "focused_role": "PAPI Lab Fellow",
+    "photo": "/media/projects/Goldfish-ezgif.com-webp-to-jpg-converter-1.jpg",
     "link": ""
   },
   {
@@ -17,7 +24,14 @@
     "name": "Seiji Isotani",
     "role": "Leadership Team",
     "focused_role": "Associate Professor, Faculty Director of Learning Analytics and Artificial Intelligence Program, Penn GSE",
-    "photo": "",
+    "photo": "/media/team/isotani-seiji-headshot.jpg.webp",
+    "link": "https://www.gse.upenn.edu/faculty/seiji-isotani"
+  },
+  {
+    "name": "Someone",
+    "role": "Participating Faculty",
+    "focused_role": "",
+    "photo": "/media/projects/Goldfish-ezgif.com-webp-to-jpg-converter-1.jpg",
     "link": ""
   }
 ]

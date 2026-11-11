@@ -27,6 +27,8 @@ copyDir(path.join(root, "assets"), path.join(dist, "assets"));
 copyDir(path.join(root, "media"), path.join(dist, "media"));
 copyDir(path.join(root, "projects"), path.join(dist, "projects"));
 copyDir(path.join(root, "events"), path.join(dist, "events"));
+fs.mkdirSync(path.join(dist, "news"), { recursive: true });
+fs.copyFileSync(path.join(root, "news", "index.html"), path.join(dist, "news", "index.html"));
 
 function fieldValue(value) {
   if (!value) return "";
@@ -140,4 +142,56 @@ if (team.length > 0) {
   fs.writeFileSync(path.join(dist, "team.json"), "[]\n");
   console.log("No team members found; wrote an empty team.json to dist/");
 }
-console.log("Copied index.html, assets/, media/, team/, events/, and projects/ to dist/");
+function slugify(value) {
+  return String(value || "").trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+}
+
+function loadTeamRecords() {
+  if (team.length > 0) return team;
+  if (!fs.existsSync(rootTeamPath)) return [];
+  const saved = JSON.parse(fs.readFileSync(rootTeamPath, "utf8"));
+  return Array.isArray(saved) ? saved : [];
+}
+
+const teamRecords = loadTeamRecords();
+const teamByName = new Map(teamRecords.map((person) => [person.name.trim().toLowerCase(), person]));
+const newsDir = path.join(root, "news");
+const news = [];
+if (fs.existsSync(newsDir)) {
+  for (const name of fs.readdirSync(newsDir)) {
+    if (!name.endsWith(".json")) continue;
+    const article = JSON.parse(fs.readFileSync(path.join(newsDir, name), "utf8"));
+    const slug = slugify(name.replace(/\.json$/i, ""));
+    if (!article || !article.title || !slug) continue;
+    const date = String(article.date || "").slice(0, 10);
+    news.push({
+      slug,
+      title: String(article.title),
+      date: /^\d{4}-\d{2}-\d{2}$/.test(date) ? date : "",
+      summary: article.summary ? String(article.summary) : "",
+      body: article.body ? String(article.body) : "",
+      image: fieldValue(article.image),
+      authors: nameList(article.author).map((authorName) => {
+        const person = teamByName.get(authorName.toLowerCase());
+        return {
+          name: authorName,
+          photo: person ? fieldValue(person.photo) : "",
+          link: person && person.link ? String(person.link) : ""
+        };
+      }),
+      guest_authors: nameList(article.guest_authors)
+    });
+  }
+}
+news.sort((a, b) => (b.date || "").localeCompare(a.date || "") || a.title.localeCompare(b.title));
+const newsManifest = JSON.stringify(news, null, 2);
+fs.writeFileSync(path.join(dist, "news.json"), newsManifest);
+fs.writeFileSync(path.join(root, "news.json"), newsManifest);
+const articleTemplate = fs.readFileSync(path.join(root, "news", "article.html"), "utf8");
+for (const article of news) {
+  const articleDir = path.join(dist, "news", article.slug);
+  fs.mkdirSync(articleDir, { recursive: true });
+  fs.writeFileSync(path.join(articleDir, "index.html"), articleTemplate.replaceAll("__ARTICLE_SLUG__", article.slug));
+}
+console.log(`Wrote ${news.length} news article(s) to news.json`);
+console.log("Copied index.html, assets/, media/, team/, events/, news/, and projects/ to dist/");

@@ -14,6 +14,11 @@ media:
     input: media/events
     output: /media/events
     categories: [image]
+  - name: news
+    label: News images
+    input: media/news
+    output: /media/news
+    categories: [image]
   - name: project-html
     label: Project HTMLs
     input: projects/html
@@ -151,3 +156,52 @@ content:
         label: Sample placeholder
         type: boolean
         hint: Turn this on while the event is stand-in copy. The site shows a Sample label.
+
+  - name: news
+    label: News
+    type: collection
+    path: news
+    filename: "{primary}.json"
+    view:
+      primary: title
+      fields: [date, author]
+    fields:
+      - name: title
+        label: Title
+        type: string
+        required: true
+      - name: date
+        label: Date
+        type: date
+        required: true
+      - name: author
+        label: Living Lab Team Authors
+        type: reference
+        required: false
+        options:
+          collection: team
+          multiple: true
+          value: "{fields.name}"
+          label: "{fields.name}"
+          search: [fields.name]
+      - name: guest_authors
+        label: Guest Authors
+        type: string
+        list: true
+        description: Manually type names of authors not in the Team collection.
+      - name: image
+        label: Top image
+        type: image
+        description: Shown at the top of the article.
+        options:
+          media: news
+      - name: summary
+        label: Summary
+        type: text
+      - name: body
+        label: Article
+        type: rich-text
+        options:
+          format: markdown
+          media: news
+          rename: safe
