@@ -82,7 +82,7 @@ content:
         required: true
         options:
           values: ["Leadership Team", "Affiliated Members", "PhD Student", "MSEd Student"]
-      - name: focused role
+      - name: focused_role
         label: Focus
         type: string
       - name: photo
