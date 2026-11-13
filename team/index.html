@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Team · Living Lab</title>
+  <title>People · Living Lab</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
@@ -19,7 +19,14 @@
       <nav class="site-nav" aria-label="Site">
         <a href="/">Home</a>
         <a href="/projects/">Projects</a>
-        <a href="/team/" aria-current="page">Team</a>
+        <details class="nav-menu is-current">
+          <summary>About Us</summary>
+          <div class="nav-menu-panel">
+            <span class="nav-later">Our Mission<span class="visually-hidden">, coming later</span></span>
+            <a href="/team/" aria-current="page">People</a>
+            <span class="nav-later">Work With Us<span class="visually-hidden">, coming later</span></span>
+          </div>
+        </details>
         <details class="nav-menu">
           <summary>Events &amp; Media</summary>
           <div class="nav-menu-panel">
@@ -37,7 +44,7 @@
   </header>
 
   <main class="page">
-    <h1 class="page-title">Team</h1>
+    <h1 class="page-title">People</h1>
     <p class="page-lead">People in the lab.</p>
     <p class="count" id="team-count" aria-live="polite"></p>
     <div id="people"></div>
