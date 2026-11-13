@@ -34,13 +34,13 @@ content:
     filename: "{primary}.json"
     view:
       primary: title
-      fields: [title, author, guest_authors, project_type, description]
+      fields: [title, authors, guest_authors, project_type, description]
     fields:
       - name: title
         label: Project Title
         type: string
         required: true
-      - name: author
+      - name: authors
         label: Living Lab Team Authors
         type: reference
         required: false
@@ -164,7 +164,7 @@ content:
     filename: "{primary}.json"
     view:
       primary: title
-      fields: [date, author]
+      fields: [title, date, authors, guest_authors]
     fields:
       - name: title
         label: Title
@@ -174,7 +174,7 @@ content:
         label: Date
         type: date
         required: true
-      - name: author
+      - name: authors
         label: Living Lab Team Authors
         type: reference
         required: false
