@@ -1,6 +1,8 @@
 {
   "title": "Firefly Jar",
-  "author": "Andrew",
+  "author": [
+    "Andrew He"
+  ],
   "project_type": "html",
   "html_file": "/projects/html/firefly-jar.html"
 }
