@@ -20,16 +20,21 @@
         <a href="/" aria-current="page">Home</a>
         <a href="/projects/">Projects</a>
         <a href="/team/">Team</a>
-        <a href="/events/">Events</a>
-        <a href="/news/">News</a>
-        <span class="nav-later">Publications<span class="visually-hidden">, coming later</span></span>
-        <span class="nav-later">AI Tinkery<span class="visually-hidden">, coming later</span></span>
-        <span class="nav-later">Podcast<span class="visually-hidden">, coming later</span></span>
+        <details class="nav-menu">
+          <summary>Events &amp; Media</summary>
+          <div class="nav-menu-panel">
+            <a href="/events/">Events</a>
+            <a href="/news/">News</a>
+            <span class="nav-later">Publications<span class="visually-hidden">, coming later</span></span>
+            <span class="nav-later">Podcast<span class="visually-hidden">, coming later</span></span>
+            <span class="nav-later">AI Tinkery<span class="visually-hidden">, coming later</span></span>
+          </div>
+        </details>
         <span class="nav-later">Newsletter<span class="visually-hidden">, coming later</span></span>
         <span class="nav-later">Academics<span class="visually-hidden">, coming later</span></span>
       </nav>
     </div>
-  </header>
+    </header>
 
   <main class="page">
     <section class="hero" aria-labelledby="hero-title">
@@ -68,8 +73,8 @@
         <p>Shared platforms that let good ideas spread.</p>
         <p class="later-link">Browse related publications<span class="visually-hidden">, coming later</span></p>
       </article>
-    </div>
-  </main>
+      </div>
+    </main>
 
   <script>
     const nextEvent = document.querySelector("#next-event");
@@ -133,7 +138,7 @@
       .then((data) => showNext(Array.isArray(data) ? data : []))
       .catch(() => {
         empty.hidden = false;
-      });
+    });
   </script>
 </body>
 </html>
