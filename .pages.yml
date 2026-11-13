@@ -4,6 +4,12 @@ media:
     input: media/projects
     output: /media/projects
     categories: [image]
+  - name: project-html
+    label: Project HTML Files
+    input: projects/html
+    output: /projects/html
+    extensions: [html, htm]
+    rename: safe
   - name: team
     label: Team Member Headshots
     input: media/team
@@ -19,12 +25,6 @@ media:
     input: media/news
     output: /media/news
     categories: [image]
-  - name: project-html
-    label: Project HTML Files
-    input: projects/html
-    output: /projects/html
-    extensions: [html, htm]
-    rename: safe
 
 content:
   - name: projects
