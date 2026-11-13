@@ -1,26 +1,26 @@
 media:
   - name: projects
-    label: Projects
+    label: Project Thumbnails
     input: media/projects
     output: /media/projects
     categories: [image]
   - name: team
-    label: Team Members
+    label: Team Member Headshots
     input: media/team
     output: /media/team
     categories: [image]
   - name: events
-    label: Events
+    label: Events Media
     input: media/events
     output: /media/events
     categories: [image]
   - name: news
-    label: News images
+    label: News Images
     input: media/news
     output: /media/news
     categories: [image]
   - name: project-html
-    label: Project HTMLs
+    label: Project HTML Files
     input: projects/html
     output: /projects/html
     extensions: [html, htm]
